@@ -39,8 +39,22 @@
             </article>
 
             <article class="pixel-panel info-card weather-card">
-              <p class="panel-label">WEATHER / BERLIN</p>
-              <p id="weather-status" class="weather-status">SYNCING...</p>
+              <div class="weather-heading">
+                <div>
+                  <p class="panel-label">WEATHER / <span id="weather-city-label">LANGEN</span></p>
+                  <p id="weather-status" class="weather-status">SYNCING...</p>
+                </div>
+                <img
+                  id="weather-icon"
+                  class="weather-icon"
+                  src="./weather-sunny.svg"
+                  alt="Pixel weather icon"
+                />
+              </div>
+              <div class="weather-controls" aria-label="Choose city">
+                <button class="city-button is-active" data-city="langen" type="button">LANGEN</button>
+                <button class="city-button" data-city="heidelberg" type="button">HEIDELBERG</button>
+              </div>
               <p id="weather-temp" class="weather-temp">--°C</p>
             </article>
           </aside>
@@ -49,8 +63,9 @@
             <div class="hero-backdrop"></div>
             <div class="hero-card pixel-panel">
               <img
-                src="./pixel-sun.svg"
-                alt="Pixel-style graphic with a sun above mountains"
+                id="slideshow-image"
+                src="./slideshow-01.svg"
+                alt="Pixel-style slideshow artwork"
                 class="pixel-hero"
               />
             </div>
