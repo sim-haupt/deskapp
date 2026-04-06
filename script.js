@@ -4,7 +4,10 @@ const timeNy = document.querySelector("#time-ny");
 const weatherStatus = document.querySelector("#weather-status");
 const weatherTemp = document.querySelector("#weather-temp");
 const weatherIcon = document.querySelector("#weather-icon");
+const weatherIconCard = document.querySelector("#weather-icon-card");
 const weatherCityLabel = document.querySelector("#weather-city-label");
+const weatherStatusInline = document.querySelector("#weather-status-inline");
+const weatherTempInline = document.querySelector("#weather-temp-inline");
 const cityButtons = document.querySelectorAll(".city-button");
 const slideshowImage = document.querySelector("#slideshow-image");
 
@@ -147,15 +150,23 @@ async function updateWeather() {
 
     weatherCityLabel.textContent = city.label;
     weatherStatus.textContent = description;
+    weatherStatusInline.textContent = description;
     weatherTemp.textContent = `${temperature}°C`;
+    weatherTempInline.textContent = `${temperature}°C`;
     weatherIcon.src = weatherIconMap[iconName];
     weatherIcon.alt = `${description} pixel weather icon`;
+    weatherIconCard.src = weatherIconMap[iconName];
+    weatherIconCard.alt = `${description} pixel weather icon`;
   } catch (error) {
     weatherCityLabel.textContent = city.label;
     weatherStatus.textContent = "WEATHER OFFLINE";
+    weatherStatusInline.textContent = "WEATHER OFFLINE";
     weatherTemp.textContent = "--°C";
+    weatherTempInline.textContent = "--°C";
     weatherIcon.src = weatherIconMap.cloudy;
     weatherIcon.alt = "Offline weather icon";
+    weatherIconCard.src = weatherIconMap.cloudy;
+    weatherIconCard.alt = "Offline weather icon";
     console.error(error);
   }
 }

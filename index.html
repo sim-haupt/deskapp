@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calm Cool Collected</title>
+    <title>Pixel Desk</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -13,72 +13,165 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <main class="screen-shell">
-      <div class="screen-frame">
-        <header class="top-bar pixel-panel">
-          <div class="brand-block">
-            <p class="eyebrow">RETRO DESKTOP</p>
-            <h1>CALM SIGNAL</h1>
+    <main class="app-shell">
+      <section class="desktop-frame">
+        <header class="top-status">
+          <div class="status-row status-row-main">
+            <div class="status-date">
+              <p id="current-date" class="status-large">Loading...</p>
+            </div>
+            <div class="status-weather">
+              <img
+                id="weather-icon"
+                class="weather-icon weather-icon-bar"
+                src="./weather-sunny.svg"
+                alt="Pixel weather icon"
+              />
+              <p class="status-large">
+                <span id="weather-temp-inline">--°C</span>
+                <span class="divider">|</span>
+                <span id="weather-status-inline">SYNCING</span>
+                <span class="divider">|</span>
+                <span id="weather-city-label">LANGEN</span>
+              </p>
+            </div>
+            <div class="status-actions" aria-hidden="true">
+              <span></span>
+              <span></span>
+            </div>
           </div>
-          <div class="date-block">
-            <p class="panel-label">DATE</p>
-            <p id="current-date" class="panel-value">Loading...</p>
+
+          <div class="status-row status-row-sub">
+            <div class="time-strip">
+              <p id="time-cet" class="status-clock">--:--:--</p>
+              <span class="live-pill">CET</span>
+              <p id="time-ny" class="status-clock secondary">--:--:--</p>
+              <span class="live-pill alt">NY</span>
+            </div>
+            <div class="city-switcher" aria-label="Choose city">
+              <button class="city-button is-active" data-city="langen" type="button">LANGEN</button>
+              <button class="city-button" data-city="heidelberg" type="button">HEIDELBERG</button>
+            </div>
           </div>
         </header>
 
         <section class="dashboard-grid">
-          <aside class="info-stack">
-            <article class="pixel-panel info-card">
-              <p class="panel-label">TIME / CET</p>
-              <p id="time-cet" class="clock-readout">--:--:--</p>
-            </article>
-
-            <article class="pixel-panel info-card">
-              <p class="panel-label">TIME / NEW YORK</p>
-              <p id="time-ny" class="clock-readout">--:--:--</p>
-            </article>
-
-            <article class="pixel-panel info-card weather-card">
-              <div class="weather-heading">
-                <div>
-                  <p class="panel-label">WEATHER / <span id="weather-city-label">LANGEN</span></p>
-                  <p id="weather-status" class="weather-status">SYNCING...</p>
+          <div class="column-left">
+            <article class="widget">
+              <div class="widget-title">DAILY OVERVIEW</div>
+              <div class="widget-body metric-list">
+                <div class="metric-row">
+                  <span>FOCUS LEVEL</span>
+                  <strong class="positive">87%</strong>
                 </div>
-                <img
-                  id="weather-icon"
-                  class="weather-icon"
-                  src="./weather-sunny.svg"
-                  alt="Pixel weather icon"
-                />
+                <div class="metric-row">
+                  <span>LIGHT MODE</span>
+                  <strong class="neutral">ACTIVE</strong>
+                </div>
+                <div class="metric-row">
+                  <span>ROOM TEMP</span>
+                  <strong class="warm">22.6C</strong>
+                </div>
               </div>
-              <div class="weather-controls" aria-label="Choose city">
-                <button class="city-button is-active" data-city="langen" type="button">LANGEN</button>
-                <button class="city-button" data-city="heidelberg" type="button">HEIDELBERG</button>
-              </div>
-              <p id="weather-temp" class="weather-temp">--°C</p>
             </article>
-          </aside>
 
-          <section class="hero-zone">
-            <div class="hero-backdrop"></div>
-            <div class="hero-card pixel-panel">
-              <img
-                id="slideshow-image"
-                src="./slideshow-01.svg"
-                alt="Pixel-style slideshow artwork"
-                class="pixel-hero"
-              />
-            </div>
-          </section>
-        </section>
+            <article class="widget">
+              <div class="widget-title">CITY WEATHER</div>
+              <div class="widget-body weather-panel">
+                <div class="weather-panel-head">
+                  <img
+                    id="weather-icon-card"
+                    class="weather-icon"
+                    src="./weather-sunny.svg"
+                    alt="Pixel weather icon"
+                  />
+                  <div>
+                    <p id="weather-status" class="weather-copy">SYNCING...</p>
+                    <p id="weather-temp" class="weather-reading">--°C</p>
+                  </div>
+                </div>
+                <div class="placeholder-note">LIVE FROM OPEN-METEO</div>
+              </div>
+            </article>
 
-        <footer class="bottom-strip pixel-panel">
-          <div class="slider-copy">
-            <p class="panel-label">MOOD DRIVER</p>
-            <p class="slider-title">CALM COOL COLLECTED</p>
+            <article class="widget">
+              <div class="widget-title">PLACEHOLDER BOX</div>
+              <div class="widget-body todo-list">
+                <p>ADD CALENDAR</p>
+                <p>ADD MUSIC WIDGET</p>
+                <p>ADD NOTES FEED</p>
+              </div>
+            </article>
           </div>
 
-          <div class="slider-wrap">
+          <div class="column-center">
+            <article class="widget hero-widget">
+              <div class="widget-title">PIXEL SLIDESHOW</div>
+              <div class="widget-body hero-body">
+                <img
+                  id="slideshow-image"
+                  src="./slideshow-01.svg"
+                  alt="Pixel-style slideshow artwork"
+                  class="pixel-hero"
+                />
+              </div>
+            </article>
+
+            <article class="widget">
+              <div class="widget-title">TREND ALERTS</div>
+              <div class="widget-body alert-list">
+                <p><span class="bullet"></span>WINDOW OPEN FOR DEEP WORK</p>
+                <p><span class="bullet"></span>RAIN CHANCE AFTER 17:00</p>
+                <p><span class="bullet"></span>SCREEN BRIGHTNESS IDEAL</p>
+              </div>
+            </article>
+          </div>
+
+          <div class="column-right">
+            <article class="widget notes-widget">
+              <div class="widget-title">TRADER'S NOTES</div>
+              <div class="widget-body notes-paper">
+                <p>CHECK WEATHER BEFORE WALK</p>
+                <p>KEEP THE DESK MINIMAL</p>
+                <p>CALM COOL COLLECTED</p>
+                <p>REPLACE THIS WITH REAL NOTES</p>
+              </div>
+            </article>
+
+            <article class="widget">
+              <div class="widget-title">TO DO LIST</div>
+              <div class="widget-body todo-list">
+                <p>CHECK E-MAILS</p>
+                <p>REVIEW TODAY PLAN</p>
+                <p>UPDATE IMAGE SET</p>
+              </div>
+            </article>
+
+            <article class="widget">
+              <div class="widget-title">WIDGET BOX</div>
+              <div class="widget-body metric-list">
+                <div class="metric-row">
+                  <span>BATTERY</span>
+                  <strong class="positive">91%</strong>
+                </div>
+                <div class="metric-row">
+                  <span>NETWORK</span>
+                  <strong class="neutral">STABLE</strong>
+                </div>
+                <div class="metric-row">
+                  <span>MOOD</span>
+                  <strong class="warm">COOL</strong>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <footer class="footer-strip">
+          <div class="footer-item">CALM COOL COLLECTED</div>
+          <div class="footer-item">EUR / USD 1.09</div>
+          <div class="footer-item">USD / JPY 151.78</div>
+          <div class="footer-slider">
             <input
               id="mood-slider"
               type="range"
@@ -88,14 +181,9 @@
               value="1"
               aria-label="Mood slider"
             />
-            <div class="slider-labels" aria-hidden="true">
-              <span>CALM</span>
-              <span>COOL</span>
-              <span>COLLECTED</span>
-            </div>
           </div>
         </footer>
-      </div>
+      </section>
     </main>
 
     <script src="./script.js"></script>
