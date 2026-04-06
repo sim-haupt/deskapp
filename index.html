@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calm Cool Collected</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="screen-shell">
+      <div class="screen-frame">
+        <header class="top-bar pixel-panel">
+          <div class="brand-block">
+            <p class="eyebrow">RETRO DESKTOP</p>
+            <h1>CALM SIGNAL</h1>
+          </div>
+          <div class="date-block">
+            <p class="panel-label">DATE</p>
+            <p id="current-date" class="panel-value">Loading...</p>
+          </div>
+        </header>
+
+        <section class="dashboard-grid">
+          <aside class="info-stack">
+            <article class="pixel-panel info-card">
+              <p class="panel-label">TIME / CET</p>
+              <p id="time-cet" class="clock-readout">--:--:--</p>
+            </article>
+
+            <article class="pixel-panel info-card">
+              <p class="panel-label">TIME / NEW YORK</p>
+              <p id="time-ny" class="clock-readout">--:--:--</p>
+            </article>
+
+            <article class="pixel-panel info-card weather-card">
+              <p class="panel-label">WEATHER / BERLIN</p>
+              <p id="weather-status" class="weather-status">SYNCING...</p>
+              <p id="weather-temp" class="weather-temp">--°C</p>
+            </article>
+          </aside>
+
+          <section class="hero-zone">
+            <div class="hero-backdrop"></div>
+            <div class="hero-card pixel-panel">
+              <img
+                src="./pixel-sun.svg"
+                alt="Pixel-style graphic with a sun above mountains"
+                class="pixel-hero"
+              />
+            </div>
+          </section>
+        </section>
+
+        <footer class="bottom-strip pixel-panel">
+          <div class="slider-copy">
+            <p class="panel-label">MOOD DRIVER</p>
+            <p class="slider-title">CALM COOL COLLECTED</p>
+          </div>
+
+          <div class="slider-wrap">
+            <input
+              id="mood-slider"
+              type="range"
+              min="0"
+              max="2"
+              step="1"
+              value="1"
+              aria-label="Mood slider"
+            />
+            <div class="slider-labels" aria-hidden="true">
+              <span>CALM</span>
+              <span>COOL</span>
+              <span>COLLECTED</span>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
