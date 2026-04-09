@@ -20,7 +20,8 @@ const dataStatus = document.querySelector("#data-status");
 const sectorList = document.querySelector("#sector-list");
 const universeSummary = document.querySelector("#universe-summary");
 const universeList = document.querySelector("#universe-list");
-const API_BASE = window.location.protocol === "file:" ? "http://localhost:3000" : "";
+const APP_CONFIG = window.__APP_CONFIG__ ?? {};
+const API_BASE = String(APP_CONFIG.apiBaseUrl ?? "http://localhost:3000").replace(/\/$/, "");
 
 const DEMO_QUOTES = [
   { label: "SPY", price: 519.42, pct: -0.6 },
@@ -382,12 +383,8 @@ async function updateMarketData() {
     setStatus(`${bannerPayload.status} / UNIVERSE ${universePayload.count}`);
   } catch (error) {
     renderDemoState();
-    if (window.location.protocol === "file:") {
-      setStatus("START LOCAL SERVER ON HTTP://LOCALHOST:3000");
-      tickerPhaseNote.textContent = "FILE MODE DETECTED / RUN NPM START";
-    } else {
-      setStatus("BACKEND OFFLINE - SHOWING DEMO DATA");
-    }
+    setStatus("BACKEND OFFLINE - SHOWING DEMO DATA");
+    tickerPhaseNote.textContent = "CHECK RAILWAY API / USING FALLBACK";
     console.error(error);
   }
 }
@@ -427,12 +424,7 @@ themeButtons.forEach((button) => {
 
 applyTheme(activeTheme);
 renderDemoState();
-if (window.location.protocol === "file:") {
-  setStatus("FILE MODE / EXPECTING HTTP://LOCALHOST:3000");
-  tickerPhaseNote.textContent = "RUN NPM START THEN OPEN LOCALHOST:3000";
-} else {
-  setStatus("BOOTING BACKEND MARKET DATA");
-}
+setStatus("BOOTING MARKET API");
 updateDateAndTime();
 updateHeaderSessionInfo();
 updateWeather();
