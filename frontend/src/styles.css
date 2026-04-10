@@ -397,12 +397,17 @@ button:focus-visible {
 .main-content {
   min-height: 0;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-template-rows: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  grid-template-rows: repeat(6, minmax(0, 1fr));
   grid-auto-flow: row;
   gap: 10px;
   overflow: auto;
   padding-right: 4px;
+}
+
+.widget-primary {
+  grid-column: span 3;
+  grid-row: span 3;
 }
 
 .widget {
@@ -640,6 +645,11 @@ button:focus-visible {
     padding-right: 0;
   }
 
+  .widget-primary {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+
   .status-row {
     flex-wrap: wrap;
     align-items: center;
@@ -708,6 +718,11 @@ button:focus-visible {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto;
     gap: 8px;
+  }
+
+  .widget-primary {
+    grid-column: span 1;
+    grid-row: span 1;
   }
 
   .status-row-main .city-switcher-top {
