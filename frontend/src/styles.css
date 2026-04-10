@@ -432,10 +432,13 @@ button:focus-visible {
 }
 
 .ticker-strip {
+  width: 100%;
+  min-width: 0;
   min-height: 0;
   background: transparent;
   overflow: hidden;
   padding: 6px 0;
+  contain: inline-size;
 }
 
 .main-content {
@@ -761,6 +764,9 @@ button:focus-visible {
 }
 
 .ticker-window {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   overflow: hidden;
   padding: 0 4px;
 }
@@ -768,13 +774,17 @@ button:focus-visible {
 .ticker-marquee {
   display: flex;
   width: max-content;
+  min-width: 0;
+  max-width: none;
   animation: marquee 32s linear infinite;
+  will-change: transform;
 }
 
 .ticker-track {
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: max-content;
   padding: 0 10px;
   white-space: nowrap;
 }
@@ -1169,13 +1179,13 @@ button:focus-visible {
   }
 
   .main-content {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: auto;
     gap: 8px;
   }
 
   .widget-primary {
-    grid-column: span 1;
+    grid-column: span 2;
     grid-row: span 1;
   }
 
@@ -1263,6 +1273,10 @@ button:focus-visible {
 }
 
 @media (max-width: 520px) {
+  .main-content {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .recent-days-list {
     grid-template-columns: 1fr;
     gap: 6px;
