@@ -745,6 +745,26 @@ button:focus-visible {
   align-content: start;
 }
 
+.calendar-day-group {
+  display: grid;
+  gap: 6px;
+}
+
+.calendar-day-heading {
+  margin: 0;
+  color: var(--orange);
+  font-size: 0.44rem;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.calendar-day-events {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+}
+
 .calendar-event-row {
   display: grid;
   gap: 6px;

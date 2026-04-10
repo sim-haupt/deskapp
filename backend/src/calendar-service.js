@@ -4,6 +4,14 @@ const { fetchText } = require("./http-client");
 
 const DEFAULT_EVENT_LIMIT = 8;
 
+function isMultiDayEvent(start, end) {
+  if (!end || Number.isNaN(end.getTime())) {
+    return false;
+  }
+
+  return start.toISOString().slice(0, 10) !== end.toISOString().slice(0, 10);
+}
+
 function unfoldIcs(value) {
   return String(value || "").replace(/\r?\n[ \t]/g, "");
 }
@@ -77,7 +85,8 @@ function parseEvents(icsText) {
         location: decodeIcsText(getField(block, "LOCATION")),
         startsAt: start.toISOString(),
         endsAt: end && !Number.isNaN(end.getTime()) ? end.toISOString() : "",
-        allDay: startsAllDay
+        allDay: startsAllDay,
+        isMultiDay: isMultiDayEvent(start, end)
       };
     })
     .filter(Boolean);

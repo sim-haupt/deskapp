@@ -106,3 +106,43 @@ export function formatCalendarEventTime(value, allDay = false) {
 
   return new Intl.DateTimeFormat("en-GB", options).format(date);
 }
+
+export function formatCalendarDayHeading(value) {
+  if (!value) {
+    return "--";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "--";
+  }
+
+  return new Intl.DateTimeFormat("en-GB", {
+    weekday: "short",
+    day: "2-digit",
+    month: "short"
+  }).format(date);
+}
+
+export function formatCalendarEventRange(startValue, endValue, allDay = false) {
+  const start = startValue ? new Date(startValue) : null;
+  const end = endValue ? new Date(endValue) : null;
+
+  if (!start || Number.isNaN(start.getTime())) {
+    return "--";
+  }
+
+  if (!end || Number.isNaN(end.getTime())) {
+    return formatCalendarEventTime(startValue, allDay);
+  }
+
+  const startDate = formatCalendarEventTime(startValue, allDay);
+  const endDate = formatCalendarEventTime(endValue, allDay);
+
+  if (startDate === endDate) {
+    return startDate;
+  }
+
+  return `${startDate} - ${endDate}`;
+}

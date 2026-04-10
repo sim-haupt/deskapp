@@ -2,6 +2,8 @@ import { cities, getWeatherIconUrl } from "./app-data.js";
 import {
   formatClock,
   formatCountdown,
+  formatCalendarDayHeading,
+  formatCalendarEventRange,
   formatCalendarEventTime,
   formatDateLabel,
   formatPercent,
@@ -147,8 +149,13 @@ function createCalendarEventItem(event) {
 
   const meta = document.createElement("span");
   meta.className = "calendar-event-meta";
-  const dateLabel = formatCalendarEventTime(event.startsAt, event.allDay);
-  meta.textContent = event.allDay ? `${dateLabel} | ALL DAY` : dateLabel;
+  const dateLabel = event.isMultiDay
+    ? formatCalendarEventRange(event.startsAt, event.endsAt, event.allDay)
+    : formatCalendarEventTime(event.startsAt, event.allDay);
+  const dayType = event.allDay ? "ALL DAY" : "EVENT";
+  meta.textContent = event.isMultiDay
+    ? `${dateLabel} | MULTI DAY`
+    : `${dateLabel} | ${dayType}`;
 
   item.append(title, meta);
 
@@ -160,6 +167,40 @@ function createCalendarEventItem(event) {
   }
 
   return item;
+}
+
+function createCalendarDayGroup(dayKey, events) {
+  const item = document.createElement("li");
+  item.className = "calendar-day-group";
+
+  const heading = document.createElement("h3");
+  heading.className = "calendar-day-heading";
+  heading.textContent = formatCalendarDayHeading(dayKey);
+
+  const list = document.createElement("ul");
+  list.className = "calendar-day-events";
+  list.replaceChildren(...events.map(createCalendarEventItem));
+
+  item.append(heading, list);
+  return item;
+}
+
+function groupCalendarEventsByDay(events) {
+  return events.reduce((groups, event) => {
+    const dayKey = event.startsAt ? event.startsAt.slice(0, 10) : "unknown";
+    const existingGroup = groups.find((group) => group.dayKey === dayKey);
+
+    if (existingGroup) {
+      existingGroup.events.push(event);
+      return groups;
+    }
+
+    groups.push({
+      dayKey,
+      events: [event]
+    });
+    return groups;
+  }, []);
 }
 
 function replaceChildren(target, children) {
@@ -338,7 +379,11 @@ export function renderCalendarEvents(elements, payload) {
     return;
   }
 
-  replaceChildren(elements.calendarList, events.map(createCalendarEventItem));
+  const groups = groupCalendarEventsByDay(events);
+  replaceChildren(
+    elements.calendarList,
+    groups.map((group) => createCalendarDayGroup(group.dayKey, group.events))
+  );
 }
 
 export function renderRecentDays(elements, lastSevenDays) {
