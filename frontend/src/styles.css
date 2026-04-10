@@ -956,6 +956,87 @@ button:focus-visible {
   }
 }
 
+@media (orientation: portrait) and (min-width: 701px) {
+  .app-shell {
+    padding: 1.5rem;
+    align-items: start;
+  }
+
+  .desktop-frame {
+    min-height: calc(100vh - 3rem);
+    min-height: calc(100dvh - 3rem);
+    height: auto;
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .status-row {
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    row-gap: 8px;
+  }
+
+  .status-row-main .status-date {
+    flex: 1 1 auto;
+  }
+
+  .status-row-main .status-weather {
+    flex: 1 1 100%;
+    order: 2;
+  }
+
+  .status-row-main .city-switcher-top {
+    order: 3;
+    margin-left: auto;
+  }
+
+  .status-row-sub .time-session-row {
+    flex: 1 1 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .status-row-sub .session-strip {
+    white-space: normal;
+  }
+
+  .status-row-sub .trade-summary-strip {
+    flex: 1 1 100%;
+    justify-content: flex-start;
+    margin-left: 0;
+  }
+
+  .main-content {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: auto;
+    gap: 10px;
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  .widget-primary {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+
+  .widget-secondary,
+  .widget-video,
+  .widget-spotify {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+
+  .footer-strip {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .theme-switcher {
+    justify-self: start;
+  }
+}
+
 @media (max-width: 700px) {
   .app-shell {
     padding: 1rem;
