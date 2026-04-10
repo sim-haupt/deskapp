@@ -5,6 +5,10 @@ const { fetchText } = require("./http-client");
 const DEFAULT_EVENT_LIMIT = 40;
 const CALENDAR_WINDOW_DAYS = 7;
 
+function getDayKey(date) {
+  return date.toISOString().slice(0, 10);
+}
+
 function getStartOfToday() {
   const date = new Date();
   date.setHours(0, 0, 0, 0);
@@ -131,9 +135,21 @@ async function getCalendarEvents({ limit = DEFAULT_EVENT_LIMIT } = {}) {
   });
   const windowStart = getStartOfToday();
   const windowEnd = getEndOfWindow(windowStart);
+  const now = Date.now();
+  const todayKey = getDayKey(windowStart);
   const events = parseEvents(icsText)
     .filter((event) => {
       const startsAt = Date.parse(event.startsAt);
+      const endsAt = event.endsAt ? Date.parse(event.endsAt) : startsAt;
+      const eventStartsToday = getDayKey(new Date(startsAt)) === todayKey;
+
+      if (!event.isMultiDay && eventStartsToday && endsAt < now) {
+        return false;
+      }
+
+      if (event.isMultiDay && endsAt >= windowStart.getTime() && startsAt <= windowEnd.getTime()) {
+        return true;
+      }
 
       return startsAt >= windowStart.getTime() && startsAt <= windowEnd.getTime();
     })
