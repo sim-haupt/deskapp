@@ -209,20 +209,25 @@ button:focus-visible {
 }
 
 .app-shell {
-  width: 100vw;
+  width: 100%;
   min-height: 100vh;
-  height: 100vh;
+  min-height: 100dvh;
+  height: auto;
   display: grid;
-  place-items: center;
+  align-items: stretch;
+  justify-items: center;
   padding: 3rem;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .desktop-frame {
   width: min(100%, 1980px);
-  height: 100%;
-  min-height: 0;
+  min-width: 0;
+  min-height: calc(100vh - 6rem);
+  min-height: calc(100dvh - 6rem);
+  height: auto;
   max-height: none;
   background:
     linear-gradient(180deg, var(--panel-highlight), transparent 30%),
@@ -863,14 +868,15 @@ button:focus-visible {
 
 @media (max-width: 1180px) {
   .app-shell {
-    padding: 3rem;
-    place-items: start center;
+    padding: 2rem;
+    align-items: start;
   }
 
   .desktop-frame {
-    min-height: 0;
+    min-height: calc(100vh - 4rem);
+    min-height: calc(100dvh - 4rem);
     max-height: none;
-    height: 100%;
+    height: auto;
     padding: 10px;
     gap: 10px;
   }
@@ -952,12 +958,13 @@ button:focus-visible {
 
 @media (max-width: 700px) {
   .app-shell {
-    padding: 3rem;
+    padding: 1rem;
   }
 
   .desktop-frame {
-    height: 100%;
-    min-height: 0;
+    min-height: calc(100vh - 2rem);
+    min-height: calc(100dvh - 2rem);
+    height: auto;
     padding: 8px;
     gap: 8px;
   }
