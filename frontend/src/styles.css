@@ -911,7 +911,7 @@ button:focus-visible {
   }
 
   .widget-primary {
-    grid-column: span 2;
+    grid-column: span 1;
     grid-row: span 1;
   }
 
@@ -1041,7 +1041,7 @@ button:focus-visible {
   }
 
   .widget-primary {
-    grid-column: span 2;
+    grid-column: span 1;
     grid-row: span 1;
   }
 
@@ -1185,7 +1185,7 @@ button:focus-visible {
   }
 
   .widget-primary {
-    grid-column: span 2;
+    grid-column: span 1;
     grid-row: span 1;
   }
 
