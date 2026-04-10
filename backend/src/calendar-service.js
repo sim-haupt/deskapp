@@ -2,7 +2,21 @@ const HttpError = require("./http-error");
 const { env } = require("./env");
 const { fetchText } = require("./http-client");
 
-const DEFAULT_EVENT_LIMIT = 8;
+const DEFAULT_EVENT_LIMIT = 40;
+const CALENDAR_WINDOW_DAYS = 7;
+
+function getStartOfToday() {
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+
+function getEndOfWindow(startDate) {
+  const date = new Date(startDate);
+  date.setDate(date.getDate() + CALENDAR_WINDOW_DAYS);
+  date.setHours(23, 59, 59, 999);
+  return date;
+}
 
 function isMultiDayEvent(start, end) {
   if (!end || Number.isNaN(end.getTime())) {
@@ -115,11 +129,14 @@ async function getCalendarEvents({ limit = DEFAULT_EVENT_LIMIT } = {}) {
   const icsText = await fetchText(calendarUrl, {
     label: "Google Calendar request"
   });
-  const now = Date.now();
+  const windowStart = getStartOfToday();
+  const windowEnd = getEndOfWindow(windowStart);
   const events = parseEvents(icsText)
     .filter((event) => {
+      const startsAt = Date.parse(event.startsAt);
       const endsAt = event.endsAt ? Date.parse(event.endsAt) : Date.parse(event.startsAt);
-      return endsAt >= now;
+
+      return endsAt >= windowStart.getTime() && startsAt <= windowEnd.getTime();
     })
     .sort((a, b) => Date.parse(a.startsAt) - Date.parse(b.startsAt))
     .slice(0, limit);
