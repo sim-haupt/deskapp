@@ -152,10 +152,7 @@ function createCalendarEventItem(event) {
   const dateLabel = event.isMultiDay
     ? formatCalendarEventRange(event.startsAt, event.endsAt, event.allDay)
     : formatCalendarEventTime(event.startsAt, event.allDay);
-  const dayType = event.allDay ? "ALL DAY" : "EVENT";
-  meta.textContent = event.isMultiDay
-    ? `${dateLabel} | MULTI DAY`
-    : `${dateLabel} | ${dayType}`;
+  meta.textContent = dateLabel;
 
   item.append(title, meta);
 
