@@ -230,8 +230,8 @@ button:focus-visible {
     12px 12px 0 var(--shadow);
   display: grid;
   grid-template-rows: auto auto 1fr auto;
-  gap: 16px;
-  padding: 18px;
+  gap: 12px;
+  padding: 14px;
 }
 
 .top-status,
@@ -248,19 +248,19 @@ button:focus-visible {
   background:
     linear-gradient(180deg, var(--top-highlight), transparent 45%),
     var(--panel);
-  padding: 14px 18px;
+  padding: 10px 14px;
 }
 
 .status-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 12px;
 }
 
 .status-row + .status-row {
-  margin-top: 14px;
-  padding-top: 14px;
+  margin-top: 10px;
+  padding-top: 10px;
   border-top: 4px solid rgba(73, 183, 255, 0.3);
 }
 
@@ -277,15 +277,16 @@ button:focus-visible {
 }
 
 .status-large {
-  font-size: clamp(0.82rem, 1.2vw, 1.4rem);
-  line-height: 1.5;
+  font-size: clamp(0.68rem, 1vw, 1.05rem);
+  line-height: 1.35;
 }
 
 .status-weather {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   min-width: 0;
+  flex: 1;
 }
 
 .status-weather .status-large {
@@ -295,34 +296,19 @@ button:focus-visible {
 
 .divider {
   color: var(--pink);
-  margin: 0 10px;
-}
-
-.status-actions {
-  display: flex;
-  gap: 10px;
-  flex: 0 0 auto;
-}
-
-.status-actions span {
-  width: 30px;
-  height: 30px;
-  border: 4px solid var(--line);
-  background: linear-gradient(180deg, #4b3578, #281d3f);
-  display: inline-block;
-  box-shadow: inset -3px -3px 0 rgba(0, 0, 0, 0.35);
+  margin: 0 6px;
 }
 
 .time-strip {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .status-clock {
-  font-size: clamp(0.9rem, 1.4vw, 1.8rem);
-  line-height: 1.4;
+  font-size: clamp(0.72rem, 1.05vw, 1.25rem);
+  line-height: 1.25;
 }
 
 .status-clock.secondary {
@@ -331,10 +317,10 @@ button:focus-visible {
 
 .live-pill {
   display: inline-block;
-  padding: 8px 10px 6px;
+  padding: 6px 8px 5px;
   background: var(--red);
   color: var(--line);
-  font-size: 0.52rem;
+  font-size: 0.44rem;
   box-shadow: 4px 4px 0 var(--shadow);
 }
 
@@ -343,31 +329,37 @@ button:focus-visible {
 }
 
 .session-strip {
-  display: grid;
-  gap: 6px;
-  justify-items: center;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
   opacity: 0.82;
+  white-space: nowrap;
 }
 
 .session-phase {
   color: var(--orange);
-  font-size: 0.54rem;
-  line-height: 1.5;
+  font-size: 0.46rem;
+  line-height: 1.25;
   text-transform: uppercase;
 }
 
 .session-countdown {
   color: var(--blue);
-  font-size: 0.5rem;
-  line-height: 1.5;
+  font-size: 0.42rem;
+  line-height: 1.25;
 }
 
 .city-switcher,
 .theme-switcher {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
+}
+
+.city-switcher-top {
+  justify-content: flex-end;
+  margin-left: auto;
 }
 
 .city-button,
@@ -375,8 +367,8 @@ button:focus-visible {
   border: 4px solid var(--line);
   background: linear-gradient(180deg, #3e2d66, #271d41);
   color: var(--ink);
-  padding: 10px 12px;
-  font-size: 0.52rem;
+  padding: 8px 10px;
+  font-size: 0.46rem;
   text-transform: uppercase;
   box-shadow: 4px 4px 0 var(--shadow);
 }
@@ -387,8 +379,8 @@ button:focus-visible {
 }
 
 .theme-button {
-  padding: 8px 10px;
-  font-size: 0.46rem;
+  padding: 7px 9px;
+  font-size: 0.42rem;
 }
 
 .theme-button.is-active {
@@ -400,16 +392,16 @@ button:focus-visible {
   min-height: 0;
   background: transparent;
   overflow: hidden;
-  padding: 10px 0;
+  padding: 6px 0;
 }
 
 .main-content {
   min-height: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 16px;
+  gap: 10px;
   overflow: auto;
-  padding-right: 6px;
+  padding-right: 4px;
 }
 
 .widget {
@@ -422,12 +414,12 @@ button:focus-visible {
 .widget-title-row {
   background: linear-gradient(90deg, var(--navy), #412974);
   color: var(--ink);
-  padding: 14px 18px 12px;
+  padding: 10px 14px 9px;
   border-bottom: 4px solid var(--line);
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 18px;
+  gap: 12px;
 }
 
 .widget-heading-group {
@@ -435,9 +427,9 @@ button:focus-visible {
 }
 
 .widget-title {
-  font-size: clamp(0.68rem, 0.95vw, 1rem);
+  font-size: clamp(0.56rem, 0.78vw, 0.8rem);
   letter-spacing: 0.04em;
-  line-height: 1.4;
+  line-height: 1.25;
   text-transform: uppercase;
   text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
 }
@@ -458,7 +450,7 @@ button:focus-visible {
 
 .widget-body {
   min-height: 0;
-  padding: 18px;
+  padding: 12px;
   background:
     linear-gradient(180deg, rgba(73, 183, 255, 0.06), transparent 40%),
     linear-gradient(180deg, var(--panel-2), var(--panel));
@@ -477,11 +469,11 @@ button:focus-visible {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
-  padding: 14px 0;
+  gap: 10px;
+  padding: 10px 0;
   border-bottom: 4px solid rgba(73, 183, 255, 0.22);
-  font-size: clamp(0.58rem, 0.78vw, 0.88rem);
-  line-height: 1.6;
+  font-size: clamp(0.5rem, 0.68vw, 0.72rem);
+  line-height: 1.4;
 }
 
 .metric-row:last-child {
@@ -510,7 +502,7 @@ button:focus-visible {
 
 .ticker-window {
   overflow: hidden;
-  padding: 0 6px;
+  padding: 0 4px;
 }
 
 .ticker-marquee {
@@ -522,23 +514,23 @@ button:focus-visible {
 .ticker-track {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 0 14px;
+  gap: 10px;
+  padding: 0 10px;
   white-space: nowrap;
 }
 
 .ticker-item {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 12px 8px;
+  gap: 8px;
+  padding: 8px 10px 6px;
   border: 4px solid var(--line);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 45%),
     var(--panel);
   box-shadow: 4px 4px 0 var(--shadow);
-  font-size: 0.52rem;
-  line-height: 1.4;
+  font-size: 0.44rem;
+  line-height: 1.25;
   text-transform: uppercase;
 }
 
@@ -565,13 +557,13 @@ button:focus-visible {
   display: grid;
   grid-template-columns: auto auto auto 1fr;
   align-items: center;
-  gap: 18px;
-  padding: 14px 18px;
+  gap: 12px;
+  padding: 10px 14px;
 }
 
 .footer-item {
-  font-size: clamp(0.58rem, 0.75vw, 0.82rem);
-  line-height: 1.5;
+  font-size: clamp(0.48rem, 0.62vw, 0.68rem);
+  line-height: 1.35;
   text-transform: uppercase;
 }
 
@@ -581,16 +573,16 @@ button:focus-visible {
 }
 
 .weather-icon {
-  width: 88px;
-  height: 88px;
+  width: 68px;
+  height: 68px;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   flex: 0 0 auto;
 }
 
 .weather-icon-bar {
-  width: 52px;
-  height: 52px;
+  width: 44px;
+  height: 44px;
 }
 
 .main-content::-webkit-scrollbar,
@@ -659,7 +651,7 @@ button:focus-visible {
   }
 
   .session-strip {
-    justify-items: start;
+    align-items: center;
     text-align: left;
   }
 
