@@ -1037,6 +1037,86 @@ button:focus-visible {
   }
 }
 
+@media (orientation: portrait) and (min-width: 900px) and (max-width: 1080px) {
+  .app-shell {
+    padding: 1rem;
+  }
+
+  .desktop-frame {
+    width: 100%;
+    min-height: calc(100vh - 2rem);
+    min-height: calc(100dvh - 2rem);
+    padding: 9px;
+    gap: 9px;
+  }
+
+  .top-status,
+  .footer-strip,
+  .widget-title-row,
+  .widget-body {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .top-status {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .status-row + .status-row {
+    margin-top: 8px;
+    padding-top: 8px;
+  }
+
+  .status-large {
+    font-size: clamp(0.62rem, 0.78vw, 0.86rem);
+  }
+
+  .status-clock {
+    font-size: clamp(0.7rem, 0.92vw, 1rem);
+  }
+
+  .session-phase {
+    font-size: 0.5rem;
+  }
+
+  .session-countdown {
+    font-size: 0.48rem;
+  }
+
+  .trade-summary-item {
+    font-size: 0.38rem;
+  }
+
+  .trade-summary-item strong {
+    font-size: 0.42rem;
+  }
+
+  .main-content {
+    gap: 9px;
+  }
+
+  .widget-title {
+    font-size: clamp(0.5rem, 0.68vw, 0.72rem);
+  }
+
+  .metric-row {
+    padding: 8px 0;
+    font-size: clamp(0.46rem, 0.58vw, 0.62rem);
+  }
+
+  .ticker-item {
+    font-size: 0.4rem;
+    padding: 7px 8px 5px;
+    gap: 6px;
+  }
+
+  .theme-button,
+  .city-button {
+    padding: 7px 9px;
+  }
+}
+
 @media (max-width: 700px) {
   .app-shell {
     padding: 1rem;
