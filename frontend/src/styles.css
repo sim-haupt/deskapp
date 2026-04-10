@@ -938,16 +938,17 @@ button:focus-visible {
   }
 
   .status-row-main .status-date {
-    flex: 1 1 auto;
+    flex: 0 1 auto;
   }
 
   .status-row-main .status-weather {
-    flex: 1 1 100%;
-    order: 3;
+    flex: 1 1 auto;
+    order: 2;
+    min-width: 0;
   }
 
   .status-row-main .city-switcher-top {
-    order: 2;
+    order: 3;
     margin-left: auto;
   }
 
@@ -960,12 +961,12 @@ button:focus-visible {
   }
 
   .footer-strip {
-    grid-template-columns: 1fr;
+    grid-template-columns: auto auto auto 1fr;
     gap: 10px;
   }
 
   .theme-switcher {
-    justify-self: start;
+    justify-self: end;
   }
 
   .phase-note {
@@ -996,12 +997,13 @@ button:focus-visible {
   }
 
   .status-row-main .status-date {
-    flex: 1 1 auto;
+    flex: 0 1 auto;
   }
 
   .status-row-main .status-weather {
-    flex: 1 1 100%;
+    flex: 1 1 auto;
     order: 2;
+    min-width: 0;
   }
 
   .status-row-main .city-switcher-top {
@@ -1059,12 +1061,12 @@ button:focus-visible {
   }
 
   .footer-strip {
-    grid-template-columns: 1fr;
+    grid-template-columns: auto auto auto 1fr;
     gap: 10px;
   }
 
   .theme-switcher {
-    justify-self: start;
+    justify-self: end;
   }
 }
 
@@ -1219,9 +1221,9 @@ button:focus-visible {
   }
 
   .status-row-main .city-switcher-top {
-    width: 100%;
+    width: auto;
     justify-content: flex-end;
-    margin-left: 0;
+    margin-left: auto;
   }
 
   .status-row-sub .time-session-row {
@@ -1261,7 +1263,7 @@ button:focus-visible {
   }
 
   .theme-button {
-    width: 100%;
+    width: auto;
     text-align: center;
   }
 
@@ -1273,6 +1275,22 @@ button:focus-visible {
 }
 
 @media (max-width: 520px) {
+  .footer-strip {
+    grid-template-columns: auto auto auto 1fr;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .footer-item {
+    font-size: 0.42rem;
+    white-space: nowrap;
+  }
+
+  .theme-switcher {
+    justify-self: end;
+    gap: 6px;
+  }
+
   .main-content {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
