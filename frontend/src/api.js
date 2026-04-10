@@ -66,3 +66,19 @@ export async function fetchTradeSummary() {
 
   return payload.data;
 }
+
+export async function fetchLatestVideo() {
+  const response = await fetch(buildApiUrl("/api/youtube/latest"), {
+    method: "GET",
+    headers: {
+      Accept: "application/json"
+    },
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+  });
+
+  if (!response.ok) {
+    throw new Error(`Latest video request failed with status ${response.status}.`);
+  }
+
+  return response.json();
+}

@@ -1,9 +1,10 @@
 import { cities } from "./app-data.js";
-import { fetchDashboard, fetchTradeSummary } from "./api.js";
+import { fetchDashboard, fetchLatestVideo, fetchTradeSummary } from "./api.js";
 import {
   renderClock,
   renderControls,
   renderFooter,
+  renderLatestVideo,
   renderLoadingState,
   renderRecentDays,
   renderRefreshError,
@@ -36,6 +37,7 @@ const elements = {
   headerMonth: document.querySelector("#header-month"),
   headerWeek: document.querySelector("#header-week"),
   headerToday: document.querySelector("#header-today"),
+  latestVideoFrame: document.querySelector("#latest-video-frame"),
   tickerTrackA: document.querySelector("#ticker-track-a"),
   tickerTrackB: document.querySelector("#ticker-track-b"),
   sectorList: document.querySelector("#sector-list"),
@@ -52,6 +54,7 @@ const state = {
   activeTheme: loadStoredTheme(),
   lastPayload: null,
   lastTradeSummary: null,
+  lastVideo: null,
   refreshInFlight: false
 };
 
@@ -107,18 +110,29 @@ async function refreshDashboard({ showLoading = false } = {}) {
     renderSectors(elements, dashboardPayload.market.sectors);
     renderFooter(elements, dashboardPayload);
 
-    try {
-      const tradeSummary = await fetchTradeSummary();
-      state.lastTradeSummary = tradeSummary;
-      renderTradeSummary(elements, tradeSummary);
-      renderRecentDays(elements, tradeSummary.lastSevenDays);
-    } catch {
-      if (state.lastTradeSummary) {
-        renderTradeSummary(elements, state.lastTradeSummary);
-        renderRecentDays(elements, state.lastTradeSummary.lastSevenDays);
-      } else {
-        renderTradeSummaryUnavailable(elements);
-      }
+    const [tradeSummaryResult, latestVideoResult] = await Promise.allSettled([
+      fetchTradeSummary(),
+      fetchLatestVideo()
+    ]);
+
+    if (tradeSummaryResult.status === "fulfilled") {
+      state.lastTradeSummary = tradeSummaryResult.value;
+      renderTradeSummary(elements, tradeSummaryResult.value);
+      renderRecentDays(elements, tradeSummaryResult.value.lastSevenDays);
+    } else if (state.lastTradeSummary) {
+      renderTradeSummary(elements, state.lastTradeSummary);
+      renderRecentDays(elements, state.lastTradeSummary.lastSevenDays);
+    } else {
+      renderTradeSummaryUnavailable(elements);
+    }
+
+    if (latestVideoResult.status === "fulfilled") {
+      state.lastVideo = latestVideoResult.value;
+      renderLatestVideo(elements, latestVideoResult.value);
+    } else if (state.lastVideo) {
+      renderLatestVideo(elements, state.lastVideo);
+    } else {
+      renderLatestVideo(elements, null);
     }
   } catch (error) {
     renderRefreshError(elements, error.message, Boolean(state.lastPayload));

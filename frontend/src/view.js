@@ -183,6 +183,24 @@ export function renderTradeSummary(elements, summary) {
   elements.headerToday.textContent = formatMoney(summary?.cumulative?.today);
 }
 
+export function renderLatestVideo(elements, video) {
+  if (!elements.latestVideoFrame) {
+    return;
+  }
+
+  if (!video?.embedUrl) {
+    elements.latestVideoFrame.removeAttribute("src");
+    elements.latestVideoFrame.title = "Latest video unavailable";
+    return;
+  }
+
+  if (elements.latestVideoFrame.src !== video.embedUrl) {
+    elements.latestVideoFrame.src = video.embedUrl;
+  }
+
+  elements.latestVideoFrame.title = video.title || "Latest video from DaytradeWarrior";
+}
+
 export function renderRecentDays(elements, lastSevenDays) {
   if (!Array.isArray(lastSevenDays) || lastSevenDays.length === 0) {
     replaceChildren(elements.recentDaysList, [createRecentDayRow(null)]);

@@ -5,6 +5,7 @@ const HttpError = require("./http-error");
 const logger = require("./logger");
 const { parseDashboardQuery } = require("./validation");
 const { getDashboardPayload } = require("./dashboard-service");
+const { getLatestYoutubeVideo } = require("./youtube-service");
 
 const app = express();
 
@@ -101,6 +102,19 @@ app.get("/api/dashboard", async (request, response, next) => {
   try {
     const query = parseDashboardQuery(request.query);
     const payload = await getDashboardPayload(query);
+    response.status(200).json(payload);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/api/youtube/latest", async (_request, response, next) => {
+  try {
+    const payload = await getLatestYoutubeVideo({
+      user: "DaytradeWarrior",
+      excludeShorts: true
+    });
+
     response.status(200).json(payload);
   } catch (error) {
     next(error);
