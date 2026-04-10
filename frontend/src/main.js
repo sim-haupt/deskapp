@@ -16,8 +16,8 @@ import {
   renderSectors,
   renderSession,
   renderSpotifyEmbed,
+  renderSpotifyMode,
   renderSpotifyResults,
-  renderSpotifyStatus,
   renderTradeSummary,
   renderTradeSummaryUnavailable,
   renderTicker,
@@ -27,6 +27,7 @@ import { getSessionState } from "./session.js";
 
 const DASHBOARD_REFRESH_MS = 60 * 1000;
 const CLOCK_REFRESH_MS = 1000;
+const SPOTIFY_SEARCH_DEBOUNCE_MS = 350;
 const STORAGE_KEY = "pixel-desk-theme";
 const DEFAULT_THEME = "arcade";
 const DEFAULT_CITY = "langen";
@@ -46,9 +47,9 @@ const elements = {
   headerWeek: document.querySelector("#header-week"),
   headerToday: document.querySelector("#header-today"),
   latestVideoFrame: document.querySelector("#latest-video-frame"),
+  spotifyWidgetBody: document.querySelector(".spotify-widget-body"),
   spotifySearchForm: document.querySelector("#spotify-search-form"),
   spotifyQuery: document.querySelector("#spotify-query"),
-  spotifyStatus: document.querySelector("#spotify-status"),
   spotifyResults: document.querySelector("#spotify-results"),
   spotifyPlayerFrame: document.querySelector("#spotify-player-frame"),
   tickerTrackA: document.querySelector("#ticker-track-a"),
@@ -69,6 +70,8 @@ const state = {
   lastTradeSummary: null,
   lastVideo: null,
   lastSpotifyResults: [],
+  spotifySearchTimer: null,
+  spotifySearchRequestId: 0,
   selectedSpotifyItem: null,
   refreshInFlight: false
 };
@@ -142,20 +145,17 @@ function parseSpotifyInput(value) {
 
 function loadSpotifyItem(item, statusMessage) {
   state.selectedSpotifyItem = item;
+  renderSpotifyResults(elements, [], () => {});
   renderSpotifyEmbed(elements, item);
-
-  if (statusMessage) {
-    renderSpotifyStatus(elements, statusMessage, "positive");
-  }
+  renderSpotifyMode(elements, "playing");
 }
 
-async function handleSpotifySearch(event) {
-  event.preventDefault();
-
-  const query = elements.spotifyQuery?.value?.trim() || "";
-
+async function searchSpotify(query) {
   if (!query) {
-    renderSpotifyStatus(elements, "Type a search before pressing enter.", "warm");
+    state.lastSpotifyResults = [];
+    renderSpotifyResults(elements, [], () => {});
+    renderSpotifyEmbed(elements, null);
+    renderSpotifyMode(elements, "searching");
     return;
   }
 
@@ -163,32 +163,69 @@ async function handleSpotifySearch(event) {
 
   if (directItem) {
     state.lastSpotifyResults = [];
-    renderSpotifyResults(elements, [], () => {}, "Direct Spotify link loaded.");
     loadSpotifyItem(directItem, "Loaded Spotify link.");
     return;
   }
 
-  renderSpotifyStatus(elements, `Searching Spotify for "${query}"...`, "neutral");
+  const requestId = state.spotifySearchRequestId + 1;
+  state.spotifySearchRequestId = requestId;
+  renderSpotifyMode(elements, "searching");
+  renderSpotifyEmbed(elements, null);
 
   try {
     const payload = await fetchSpotifySearch(query, 40);
+
+    if (requestId !== state.spotifySearchRequestId) {
+      return;
+    }
+
     const results = Array.isArray(payload?.results) ? payload.results : [];
     state.lastSpotifyResults = results;
+    renderSpotifyMode(elements, "searching");
 
     renderSpotifyResults(elements, results, (item) => {
       loadSpotifyItem(item, `Loaded ${item.type}: ${item.title}`);
     });
 
-    if (results.length > 0) {
-      loadSpotifyItem(results[0], `Loaded top result for "${query}".`);
-    } else {
-      renderSpotifyEmbed(elements, null);
-      renderSpotifyStatus(elements, `No Spotify results for "${query}".`, "warm");
+    if (results.length === 0) {
       renderSpotifyResults(elements, [], () => {}, `No results for "${query}".`);
     }
   } catch (error) {
-    renderSpotifyStatus(elements, error.message, "warm");
+    if (requestId !== state.spotifySearchRequestId) {
+      return;
+    }
+    renderSpotifyMode(elements, "searching");
+    renderSpotifyResults(elements, [], () => {}, "Spotify search unavailable.");
   }
+}
+
+function handleSpotifySearch(event) {
+  event.preventDefault();
+
+  const query = elements.spotifyQuery?.value?.trim() || "";
+
+  if (!query) {
+    searchSpotify("");
+    return;
+  }
+
+  window.clearTimeout(state.spotifySearchTimer);
+  searchSpotify(query);
+}
+
+function handleSpotifyInput() {
+  const query = elements.spotifyQuery?.value?.trim() || "";
+
+  window.clearTimeout(state.spotifySearchTimer);
+
+  if (!query) {
+    searchSpotify("");
+    return;
+  }
+
+  state.spotifySearchTimer = window.setTimeout(() => {
+    searchSpotify(query);
+  }, SPOTIFY_SEARCH_DEBOUNCE_MS);
 }
 
 async function refreshDashboard({ showLoading = false } = {}) {
@@ -272,14 +309,15 @@ function bindEvents() {
   elements.cityButtons.forEach((button) => button.addEventListener("click", handleCityChange));
   elements.themeButtons.forEach((button) => button.addEventListener("click", handleThemeChange));
   elements.spotifySearchForm?.addEventListener("submit", handleSpotifySearch);
+  elements.spotifyQuery?.addEventListener("input", handleSpotifyInput);
 }
 
 function init() {
   applyTheme(state.activeTheme);
   renderControls(elements, state);
   renderLoadingState(elements, state.activeCity);
-  renderSpotifyStatus(elements, "Search for something to play.", "neutral");
-  renderSpotifyResults(elements, [], () => {}, "No search yet.");
+  renderSpotifyMode(elements, "searching");
+  renderSpotifyResults(elements, [], () => {});
   renderSpotifyEmbed(elements, null);
   updateClock();
   bindEvents();

@@ -232,6 +232,17 @@ export function renderSpotifyStatus(elements, message, tone = "neutral") {
   elements.spotifyStatus.dataset.tone = tone;
 }
 
+export function renderSpotifyMode(elements, mode) {
+  const body = elements.spotifyWidgetBody;
+
+  if (!body) {
+    return;
+  }
+
+  body.classList.toggle("is-searching", mode === "searching");
+  body.classList.toggle("is-playing", mode === "playing");
+}
+
 export function renderSpotifyResults(elements, results, onSelect, emptyMessage = "No results found.") {
   if (!elements.spotifyResults) {
     return;
