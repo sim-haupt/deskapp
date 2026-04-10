@@ -1,4 +1,4 @@
-const { getBannerData, getScreenedUniverse } = require("./market-service");
+const { getBannerData } = require("./market-service");
 const { getSessionState } = require("./session");
 const { getWeatherForCity } = require("./weather-service");
 const logger = require("./logger");
@@ -23,25 +23,14 @@ function fallbackMarket() {
   };
 }
 
-function fallbackUniverse(filters) {
-  return {
-    asOf: new Date().toISOString(),
-    filters,
-    count: 0,
-    symbols: []
-  };
-}
-
-async function getDashboardPayload({ city, filters }) {
-  const [weatherResult, marketResult, universeResult] = await Promise.allSettled([
+async function getDashboardPayload({ city }) {
+  const [weatherResult, marketResult] = await Promise.allSettled([
     getWeatherForCity(city),
-    getBannerData(),
-    getScreenedUniverse(filters)
+    getBannerData()
   ]);
 
   const weather = weatherResult.status === "fulfilled" ? weatherResult.value : fallbackWeather(city);
   const market = marketResult.status === "fulfilled" ? marketResult.value : fallbackMarket();
-  const universe = universeResult.status === "fulfilled" ? universeResult.value : fallbackUniverse(filters);
 
   if (weatherResult.status === "rejected") {
     logger.warn("Weather service failed for dashboard payload", {
@@ -57,13 +46,6 @@ async function getDashboardPayload({ city, filters }) {
     });
   }
 
-  if (universeResult.status === "rejected") {
-    logger.warn("Universe service failed for dashboard payload", {
-      city,
-      message: universeResult.reason?.message || "Unknown universe failure"
-    });
-  }
-
   return {
     meta: {
       asOf: new Date().toISOString(),
@@ -71,8 +53,7 @@ async function getDashboardPayload({ city, filters }) {
       session: getSessionState(new Date())
     },
     weather,
-    market,
-    universe
+    market
   };
 }
 

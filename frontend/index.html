@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Pixel Desk is a retro market board with weather, live clocks, session status, and a screened equity universe."
+      content="Pixel Desk is a retro market board with weather, live clocks, a market ticker loop, and trending sectors."
     />
     <title>Pixel Desk</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -86,67 +86,33 @@
         </header>
 
         <section class="dashboard-grid" aria-live="polite">
-          <div class="column-left">
-            <article class="widget" aria-labelledby="sector-title">
-              <div class="widget-title-row">
-                <div class="widget-heading-group">
-                  <h2 id="sector-title" class="widget-title">Trending Sectors</h2>
-                  <p class="widget-subtitle">Top performers in the current delayed snapshot.</p>
+          <article class="widget ticker-banner" aria-labelledby="ticker-title">
+            <h2 id="ticker-title" class="sr-only">Market ticker</h2>
+            <div class="widget-body hero-body ticker-banner-body">
+              <div class="ticker-window" aria-label="Scrolling market ticker">
+                <div id="ticker-marquee" class="ticker-marquee">
+                  <div id="ticker-track-a" class="ticker-track"></div>
+                  <div id="ticker-track-b" class="ticker-track" aria-hidden="true"></div>
                 </div>
               </div>
-              <div class="widget-body">
-                <ul id="sector-list" class="metric-list" aria-live="polite">
-                  <li class="metric-row">
-                    <span>Loading</span>
-                    <strong class="neutral">--</strong>
-                  </li>
-                </ul>
-              </div>
-            </article>
-          </div>
+            </div>
+          </article>
 
-          <div class="column-center">
-            <article class="widget hero-widget" aria-labelledby="ticker-title">
-              <div class="widget-title-row">
-                <div class="widget-heading-group">
-                  <h2 id="ticker-title" class="widget-title">Market Ticker</h2>
-                  <p class="widget-subtitle">
-                    Delayed equities and crypto overview from the Railway API.
-                  </p>
-                </div>
-                <p id="ticker-phase-note" class="phase-note">Waiting for market data…</p>
+          <article class="widget" aria-labelledby="sector-title">
+            <div class="widget-title-row">
+              <div class="widget-heading-group">
+                <h2 id="sector-title" class="widget-title">Trending Sectors</h2>
               </div>
-              <div class="widget-body hero-body">
-                <div class="ticker-window" aria-label="Scrolling market ticker">
-                  <div id="ticker-marquee" class="ticker-marquee">
-                    <div id="ticker-track-a" class="ticker-track"></div>
-                    <div id="ticker-track-b" class="ticker-track" aria-hidden="true"></div>
-                  </div>
-                </div>
-              </div>
-            </article>
-          </div>
-
-          <div class="column-right">
-            <article class="widget" aria-labelledby="universe-title">
-              <div class="widget-title-row">
-                <div class="widget-heading-group">
-                  <h2 id="universe-title" class="widget-title">Screened Universe</h2>
-                  <p id="universe-summary" class="widget-subtitle">
-                    Price $2-$20 / volume under 50M
-                  </p>
-                </div>
-              </div>
-              <div class="widget-body">
-                <ul id="universe-list" class="metric-list" aria-live="polite">
-                  <li class="metric-row">
-                    <span>Loading</span>
-                    <strong class="neutral">--</strong>
-                  </li>
-                </ul>
-              </div>
-            </article>
-          </div>
+            </div>
+            <div class="widget-body">
+              <ul id="sector-list" class="metric-list" aria-live="polite">
+                <li class="metric-row">
+                  <span>Loading</span>
+                  <strong class="neutral">--</strong>
+                </li>
+              </ul>
+            </div>
+          </article>
         </section>
 
         <footer class="footer-strip">

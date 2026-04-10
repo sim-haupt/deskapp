@@ -398,27 +398,10 @@ button:focus-visible {
 .dashboard-grid {
   min-height: 0;
   display: grid;
-  grid-template-columns: 1.02fr 1.1fr 0.96fr;
+  grid-template-columns: 1fr;
   gap: 16px;
   overflow: auto;
   padding-right: 6px;
-}
-
-.column-left,
-.column-center,
-.column-right {
-  min-height: 0;
-  display: grid;
-  gap: 16px;
-}
-
-.column-left,
-.column-right {
-  grid-template-rows: minmax(0, 1fr);
-}
-
-.column-center {
-  grid-template-rows: minmax(0, 1fr);
 }
 
 .widget {
@@ -519,17 +502,24 @@ button:focus-visible {
 
 .hero-body {
   display: grid;
-  align-items: end;
+  align-items: center;
   background:
     radial-gradient(circle at center, rgba(255, 127, 209, 0.12), transparent 42%),
     linear-gradient(180deg, rgba(73, 183, 255, 0.08), transparent 60%),
     #160f23;
 }
 
+.ticker-banner .widget-body {
+  min-height: 110px;
+}
+
+.ticker-banner-body {
+  padding: 10px 0;
+}
+
 .ticker-window {
   overflow: hidden;
-  padding-bottom: 8px;
-  padding-top: 10px;
+  padding: 0 6px 8px;
 }
 
 .ticker-marquee {
@@ -655,15 +645,8 @@ button:focus-visible {
   }
 
   .dashboard-grid {
-    grid-template-columns: 1fr;
     overflow: visible;
     padding-right: 0;
-  }
-
-  .column-left,
-  .column-center,
-  .column-right {
-    grid-template-rows: auto;
   }
 
   .footer-strip {

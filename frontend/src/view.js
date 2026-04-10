@@ -5,8 +5,7 @@ import {
   formatDateLabel,
   formatPercent,
   formatPrice,
-  formatUpdateTime,
-  formatVolumeMillions
+  formatUpdateTime
 } from "./formatters.js";
 
 function createMetricRow(label, value, tone = "neutral") {
@@ -131,40 +130,16 @@ export function renderSectors(elements, sectors) {
   );
 }
 
-export function renderUniverse(elements, universe) {
-  const filterSummary = universe?.filters
-    ? `Price $${universe.filters.priceMin}-$${universe.filters.priceMax} / volume under ${formatVolumeMillions(
-        universe.filters.maxVolume
-      )}`
-    : "Screen configuration unavailable";
-
-  elements.universeSummary.textContent = `${universe?.count || 0} matches / ${filterSummary}`;
-
-  if (!Array.isArray(universe?.symbols) || universe.symbols.length === 0) {
-    replaceChildren(elements.universeList, [createMetricRow("No matching symbols", "Adjust filters")]);
-    return;
-  }
-
-  replaceChildren(
-    elements.universeList,
-    universe.symbols.map((item) =>
-      createMetricRow(item.symbol, `${formatPrice(item.price)} / ${formatVolumeMillions(item.volume)}`, "neutral")
-    )
-  );
-}
-
 export function renderFooter(elements, payload) {
   elements.dataStatus.textContent = "Backend online";
   elements.feedLabel.textContent = payload.market.feedLabel;
   elements.lastUpdated.textContent = `Updated ${formatUpdateTime(payload.meta.asOf)}`;
-  elements.tickerPhaseNote.textContent = `${payload.meta.session.phase} / ${payload.market.feedLabel}`;
 }
 
 export function renderLoadingState(elements, activeCity) {
   elements.dataStatus.textContent = "Loading dashboard data…";
   elements.feedLabel.textContent = "Waiting for backend response";
   elements.lastUpdated.textContent = "Awaiting first sync";
-  elements.tickerPhaseNote.textContent = "Loading market data…";
   elements.weatherCityLabel.textContent = cities[activeCity]?.label || "Selected city";
   elements.weatherTempInline.textContent = "--°C";
   elements.weatherStatusInline.textContent = "Syncing weather…";
@@ -178,9 +153,7 @@ export function renderRefreshError(elements, message, hasExistingData) {
 
   if (!hasExistingData) {
     elements.feedLabel.textContent = "Backend unavailable";
-    elements.tickerPhaseNote.textContent = "Unable to load market data";
     replaceChildren(elements.sectorList, [createMetricRow("Backend unavailable", "--")]);
-    replaceChildren(elements.universeList, [createMetricRow("Backend unavailable", "--")]);
     renderTicker(elements, []);
   }
 }

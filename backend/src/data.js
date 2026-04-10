@@ -66,10 +66,7 @@ const weatherCodes = {
   99: "HARD STORM"
 };
 
-const allowedExchanges = new Set(["NYSE", "NASDAQ", "AMEX", "ARCA", "BATS", "NYSEARCA"]);
-
 module.exports = {
-  allowedExchanges,
   cities,
   cryptoSymbols,
   sectorSymbols,

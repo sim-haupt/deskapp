@@ -1,23 +1,12 @@
 const { URL } = require("node:url");
 const MemoryCache = require("./cache");
-const { allowedExchanges, cryptoSymbols, sectorSymbols, stockSymbols } = require("./data");
+const { cryptoSymbols, sectorSymbols, stockSymbols } = require("./data");
 const { env } = require("./env");
 const HttpError = require("./http-error");
 const { fetchJson } = require("./http-client");
 const logger = require("./logger");
 
 const bannerCache = new MemoryCache();
-const universeCache = new MemoryCache();
-
-function chunk(items, size) {
-  const chunks = [];
-
-  for (let index = 0; index < items.length; index += size) {
-    chunks.push(items.slice(index, index + size));
-  }
-
-  return chunks;
-}
 
 function isoTimestamp(date) {
   return date.toISOString();
@@ -37,7 +26,6 @@ function getAlpacaHeaders() {
 async function fetchStockLatestBars(symbols) {
   return fetchStockBarsWithFeedFallback({
     endpoint: "https://data.alpaca.markets/v2/stocks/bars/latest",
-    symbols,
     label: "Alpaca latest stock bars",
     applySpecificParams(url) {
       url.searchParams.set("symbols", symbols.join(","));
@@ -48,7 +36,6 @@ async function fetchStockLatestBars(symbols) {
 async function fetchStockDailyBars(symbols, start, end) {
   return fetchStockBarsWithFeedFallback({
     endpoint: "https://data.alpaca.markets/v2/stocks/bars",
-    symbols,
     label: "Alpaca daily stock bars",
     applySpecificParams(url) {
       url.searchParams.set("symbols", symbols.join(","));
@@ -69,7 +56,7 @@ function isRetryableAlpacaFeedError(error) {
   );
 }
 
-async function fetchStockBarsWithFeedFallback({ endpoint, symbols, label, applySpecificParams }) {
+async function fetchStockBarsWithFeedFallback({ endpoint, label, applySpecificParams }) {
   const feedAttempts = ["delayed_sip", "iex", ""];
   let lastError;
 
@@ -112,21 +99,6 @@ async function fetchCryptoSnapshots(symbols) {
   return fetchJson(url, {
     headers: getAlpacaHeaders(),
     label: "Alpaca crypto snapshots"
-  });
-}
-
-async function fetchActiveAssets() {
-  const url = new URL("https://paper-api.alpaca.markets/v2/assets");
-  url.searchParams.set("status", "active");
-  url.searchParams.set("asset_class", "us_equity");
-
-  const assets = await fetchJson(url, {
-    headers: getAlpacaHeaders(),
-    label: "Alpaca active assets"
-  });
-
-  return assets.filter((asset) => {
-    return asset.tradable && allowedExchanges.has(asset.exchange) && /^[A-Z.-]+$/.test(asset.symbol);
   });
 }
 
@@ -234,96 +206,6 @@ async function getBannerData() {
   }
 }
 
-async function getScreenedUniverse(filters) {
-  const cacheKey = JSON.stringify(filters);
-  const cached = universeCache.get(cacheKey);
-
-  if (cached) {
-    return cached;
-  }
-
-  try {
-    const assets = await fetchActiveAssets();
-    const { delayedNow, dailyStart, dailyEnd } = getDelayedMarketWindow(7);
-    const filteredByDaily = [];
-
-    for (const symbols of chunk(
-      assets.map((asset) => asset.symbol),
-      200
-    )) {
-      const barsPayload = await fetchStockDailyBars(symbols, dailyStart, dailyEnd);
-
-      symbols.forEach((symbol) => {
-        const latestDailyBar = (barsPayload?.bars?.[symbol] || []).at(-1);
-
-        if (!latestDailyBar) {
-          return;
-        }
-
-        if (
-          latestDailyBar.c >= filters.priceMin &&
-          latestDailyBar.c <= filters.priceMax &&
-          latestDailyBar.v <= filters.maxVolume
-        ) {
-          filteredByDaily.push({
-            symbol,
-            close: latestDailyBar.c,
-            volume: latestDailyBar.v
-          });
-        }
-      });
-    }
-
-    const latestPriceBySymbol = {};
-
-    for (const symbols of chunk(
-      filteredByDaily.map((item) => item.symbol),
-      200
-    )) {
-      const latestPayload = await fetchStockLatestBars(symbols);
-
-      symbols.forEach((symbol) => {
-        latestPriceBySymbol[symbol] = latestPayload?.bars?.[symbol]?.c || null;
-      });
-    }
-
-    const symbols = filteredByDaily
-      .map((item) => {
-        return {
-          symbol: item.symbol,
-          price: latestPriceBySymbol[item.symbol] || item.close,
-          previousClose: item.close,
-          volume: item.volume
-        };
-      })
-      .filter((item) => item.price >= filters.priceMin && item.price <= filters.priceMax)
-      .sort((left, right) => left.volume - right.volume)
-      .slice(0, filters.limit);
-
-    return universeCache.set(
-      cacheKey,
-      {
-        asOf: delayedNow.toISOString(),
-        filters,
-        count: symbols.length,
-        symbols
-      },
-      15 * 60 * 1000
-    );
-  } catch (error) {
-    logger.warn("Unable to refresh screened universe", {
-      message: error.message
-    });
-
-    if (error.statusCode) {
-      throw error;
-    }
-
-    throw new HttpError(502, "Unable to retrieve screened universe data right now.");
-  }
-}
-
 module.exports = {
-  getBannerData,
-  getScreenedUniverse
+  getBannerData
 };

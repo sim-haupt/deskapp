@@ -9,7 +9,6 @@ import {
   renderSession,
   renderSectors,
   renderTicker,
-  renderUniverse,
   renderWeather
 } from "./view.js";
 import { getSessionState } from "./session.js";
@@ -19,12 +18,6 @@ const CLOCK_REFRESH_MS = 1000;
 const STORAGE_KEY = "pixel-desk-theme";
 const DEFAULT_THEME = "arcade";
 const DEFAULT_CITY = "langen";
-const DEFAULT_DASHBOARD_QUERY = {
-  priceMin: 2,
-  priceMax: 20,
-  maxVolume: 50000000,
-  limit: 8
-};
 
 const elements = {
   currentDate: document.querySelector("#current-date"),
@@ -36,12 +29,9 @@ const elements = {
   weatherStatusInline: document.querySelector("#weather-status-inline"),
   headerSessionPhase: document.querySelector("#header-session-phase"),
   headerSessionCountdown: document.querySelector("#header-session-countdown"),
-  tickerPhaseNote: document.querySelector("#ticker-phase-note"),
   tickerTrackA: document.querySelector("#ticker-track-a"),
   tickerTrackB: document.querySelector("#ticker-track-b"),
   sectorList: document.querySelector("#sector-list"),
-  universeSummary: document.querySelector("#universe-summary"),
-  universeList: document.querySelector("#universe-list"),
   dataStatus: document.querySelector("#data-status"),
   feedLabel: document.querySelector("#feed-label"),
   lastUpdated: document.querySelector("#last-updated"),
@@ -98,8 +88,7 @@ async function refreshDashboard({ showLoading = false } = {}) {
 
   try {
     const dashboardPayload = await fetchDashboard({
-      city: state.activeCity,
-      ...DEFAULT_DASHBOARD_QUERY
+      city: state.activeCity
     });
 
     state.lastPayload = dashboardPayload;
@@ -107,7 +96,6 @@ async function refreshDashboard({ showLoading = false } = {}) {
     renderWeather(elements, dashboardPayload.weather);
     renderTicker(elements, dashboardPayload.market.quotes);
     renderSectors(elements, dashboardPayload.market.sectors);
-    renderUniverse(elements, dashboardPayload.universe);
     renderFooter(elements, dashboardPayload);
   } catch (error) {
     renderRefreshError(elements, error.message, Boolean(state.lastPayload));
