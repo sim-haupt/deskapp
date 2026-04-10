@@ -7,7 +7,6 @@ import {
   renderLoadingState,
   renderRefreshError,
   renderSession,
-  renderSectors,
   renderTicker,
   renderWeather
 } from "./view.js";
@@ -31,7 +30,6 @@ const elements = {
   headerSessionCountdown: document.querySelector("#header-session-countdown"),
   tickerTrackA: document.querySelector("#ticker-track-a"),
   tickerTrackB: document.querySelector("#ticker-track-b"),
-  sectorList: document.querySelector("#sector-list"),
   dataStatus: document.querySelector("#data-status"),
   feedLabel: document.querySelector("#feed-label"),
   lastUpdated: document.querySelector("#last-updated"),
@@ -95,7 +93,6 @@ async function refreshDashboard({ showLoading = false } = {}) {
 
     renderWeather(elements, dashboardPayload.weather);
     renderTicker(elements, dashboardPayload.market.quotes);
-    renderSectors(elements, dashboardPayload.market.sectors);
     renderFooter(elements, dashboardPayload);
   } catch (error) {
     renderRefreshError(elements, error.message, Boolean(state.lastPayload));

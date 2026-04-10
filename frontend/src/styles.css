@@ -511,10 +511,16 @@ button:focus-visible {
 
 .ticker-banner .widget-body {
   min-height: 110px;
+  background: transparent;
+  overflow: hidden;
 }
 
 .ticker-banner-body {
   padding: 10px 0;
+}
+
+.ticker-banner {
+  background: transparent;
 }
 
 .ticker-window {

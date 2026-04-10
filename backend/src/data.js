@@ -15,11 +15,11 @@ const cities = {
 
 const stockSymbols = [
   { symbol: "SPY", label: "SPY" },
-  { symbol: "QQQ", label: "NASDAQ" },
-  { symbol: "IWM", label: "RUSSELL" },
-  { symbol: "DIA", label: "DOW" },
-  { symbol: "GLD", label: "GOLD" },
-  { symbol: "TLT", label: "BONDS" }
+  { symbol: "QQQ", label: "QQQ" },
+  { symbol: "IWM", label: "IWM" },
+  { symbol: "DIA", label: "DIA" },
+  { symbol: "GLD", label: "GLD" },
+  { symbol: "TLT", label: "TLT" }
 ];
 
 const cryptoSymbols = [{ symbol: "BTC/USD", label: "BTC" }];

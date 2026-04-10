@@ -8,10 +8,6 @@ const logger = require("./logger");
 
 const bannerCache = new MemoryCache();
 
-function isoTimestamp(date) {
-  return date.toISOString();
-}
-
 function getAlpacaHeaders() {
   if (!env.hasAlpacaCredentials) {
     throw new HttpError(503, "Market data service is not configured. Set Alpaca credentials on the backend.");
@@ -23,26 +19,12 @@ function getAlpacaHeaders() {
   };
 }
 
-async function fetchStockLatestBars(symbols) {
-  return fetchStockBarsWithFeedFallback({
-    endpoint: "https://data.alpaca.markets/v2/stocks/bars/latest",
-    label: "Alpaca latest stock bars",
+async function fetchStockSnapshots(symbols) {
+  return fetchStockWithFeedFallback({
+    endpoint: "https://data.alpaca.markets/v2/stocks/snapshots",
+    label: "Alpaca stock snapshots",
     applySpecificParams(url) {
       url.searchParams.set("symbols", symbols.join(","));
-    }
-  });
-}
-
-async function fetchStockDailyBars(symbols, start, end) {
-  return fetchStockBarsWithFeedFallback({
-    endpoint: "https://data.alpaca.markets/v2/stocks/bars",
-    label: "Alpaca daily stock bars",
-    applySpecificParams(url) {
-      url.searchParams.set("symbols", symbols.join(","));
-      url.searchParams.set("timeframe", "1Day");
-      url.searchParams.set("start", isoTimestamp(start));
-      url.searchParams.set("end", isoTimestamp(end));
-      url.searchParams.set("limit", "10000");
     }
   });
 }
@@ -52,11 +34,11 @@ function isRetryableAlpacaFeedError(error) {
     error &&
     error.name === "HttpError" &&
     typeof error.message === "string" &&
-    error.message.includes("failed with status 400")
+    /status (400|403|422)\b/.test(error.message)
   );
 }
 
-async function fetchStockBarsWithFeedFallback({ endpoint, label, applySpecificParams }) {
+async function fetchStockWithFeedFallback({ endpoint, label, applySpecificParams }) {
   const feedAttempts = ["delayed_sip", "iex", ""];
   let lastError;
 
@@ -102,13 +84,16 @@ async function fetchCryptoSnapshots(symbols) {
   });
 }
 
-function mapBannerStocks(latestPayload, dailyPayload) {
+function getStockSnapshot(payload, symbol) {
+  return payload?.snapshots?.[symbol] || payload?.[symbol] || null;
+}
+
+function mapBannerStocks(stockSnapshotPayload) {
   return stockSymbols.map(({ symbol, label }) => {
-    const latestBar = latestPayload?.bars?.[symbol] || null;
-    const dailyBars = dailyPayload?.bars?.[symbol] || [];
-    const previousDailyBar = dailyBars.at(-1) || null;
-    const price = latestBar?.c || previousDailyBar?.c || 0;
-    const previousClose = previousDailyBar?.c || price;
+    const snapshot = getStockSnapshot(stockSnapshotPayload, symbol);
+    const price =
+      snapshot?.latestTrade?.p || snapshot?.minuteBar?.c || snapshot?.dailyBar?.c || snapshot?.prevDailyBar?.c || 0;
+    const previousClose = snapshot?.prevDailyBar?.c || snapshot?.dailyBar?.o || price;
 
     return {
       symbol,
@@ -119,14 +104,13 @@ function mapBannerStocks(latestPayload, dailyPayload) {
   });
 }
 
-function mapBannerSectors(latestPayload, dailyPayload) {
+function mapBannerSectors(stockSnapshotPayload) {
   return sectorSymbols
     .map(({ symbol, label }) => {
-      const latestBar = latestPayload?.bars?.[symbol] || null;
-      const dailyBars = dailyPayload?.bars?.[symbol] || [];
-      const previousDailyBar = dailyBars.at(-1) || null;
-      const price = latestBar?.c || previousDailyBar?.c || 0;
-      const previousClose = previousDailyBar?.c || price;
+      const snapshot = getStockSnapshot(stockSnapshotPayload, symbol);
+      const price =
+        snapshot?.latestTrade?.p || snapshot?.minuteBar?.c || snapshot?.dailyBar?.c || snapshot?.prevDailyBar?.c || 0;
+      const previousClose = snapshot?.prevDailyBar?.c || snapshot?.dailyBar?.o || price;
 
       return {
         symbol,
@@ -154,18 +138,6 @@ function mapBannerCrypto(payload) {
   });
 }
 
-function getDelayedMarketWindow(daysBack) {
-  const delayedNow = new Date(Date.now() - 20 * 60 * 1000);
-  const dailyEnd = new Date(delayedNow.getTime() - 24 * 60 * 60 * 1000);
-  const dailyStart = new Date(dailyEnd.getTime() - daysBack * 24 * 60 * 60 * 1000);
-
-  return {
-    delayedNow,
-    dailyStart,
-    dailyEnd
-  };
-}
-
 async function getBannerData() {
   const cached = bannerCache.get("market-banner");
 
@@ -174,22 +146,20 @@ async function getBannerData() {
   }
 
   try {
-    const { delayedNow, dailyStart, dailyEnd } = getDelayedMarketWindow(10);
     const symbols = [...stockSymbols, ...sectorSymbols].map((item) => item.symbol);
 
-    const [latestStocks, dailyStocks, cryptoPayload] = await Promise.all([
-      fetchStockLatestBars(symbols),
-      fetchStockDailyBars(symbols, dailyStart, dailyEnd),
+    const [stockSnapshots, cryptoPayload] = await Promise.all([
+      fetchStockSnapshots(symbols),
       fetchCryptoSnapshots(cryptoSymbols.map((item) => item.symbol))
     ]);
 
     return bannerCache.set(
       "market-banner",
       {
-        asOf: delayedNow.toISOString(),
+        asOf: new Date().toISOString(),
         feedLabel: "DELAYED SIP EQUITIES / ALPACA CRYPTO",
-        quotes: [...mapBannerStocks(latestStocks, dailyStocks), ...mapBannerCrypto(cryptoPayload)],
-        sectors: mapBannerSectors(latestStocks, dailyStocks)
+        quotes: [...mapBannerStocks(stockSnapshots), ...mapBannerCrypto(cryptoPayload)],
+        sectors: mapBannerSectors(stockSnapshots)
       },
       60 * 1000
     );
