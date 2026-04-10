@@ -2,6 +2,7 @@ import { cities } from "./app-data.js";
 import {
   fetchCalendarEvents,
   fetchDashboard,
+  fetchEconomicCalendar,
   fetchLatestVideo,
   fetchSpotifySearch,
   fetchTradeSummary,
@@ -11,6 +12,7 @@ import {
   renderClock,
   renderCalendarEvents,
   renderControls,
+  renderEconomicCalendar,
   renderFooter,
   renderLatestVideo,
   renderLoadingState,
@@ -53,6 +55,9 @@ const elements = {
   headerWeek: document.querySelector("#header-week"),
   headerToday: document.querySelector("#header-today"),
   latestVideoFrame: document.querySelector("#latest-video-frame"),
+  spotifyModal: document.querySelector("#spotify-modal"),
+  spotifyModalTrigger: document.querySelector("#spotify-modal-trigger"),
+  spotifyModalClose: document.querySelector("#spotify-modal-close"),
   spotifyWidgetBody: document.querySelector(".spotify-widget-body"),
   spotifySearchForm: document.querySelector("#spotify-search-form"),
   spotifyQuery: document.querySelector("#spotify-query"),
@@ -60,6 +65,7 @@ const elements = {
   spotifyResults: document.querySelector("#spotify-results"),
   spotifyPlayerFrame: document.querySelector("#spotify-player-frame"),
   calendarList: document.querySelector("#calendar-list"),
+  economicList: document.querySelector("#economic-list"),
   newsList: document.querySelector("#news-list"),
   tickerTrackA: document.querySelector("#ticker-track-a"),
   tickerTrackB: document.querySelector("#ticker-track-b"),
@@ -79,6 +85,7 @@ const state = {
   lastTradeSummary: null,
   lastVideo: null,
   lastCalendar: null,
+  lastEconomicCalendar: null,
   lastNews: null,
   lastSpotifyResults: [],
   activeSpotifyType: DEFAULT_SPOTIFY_TYPE,
@@ -218,9 +225,49 @@ async function searchSpotify(query) {
     if (requestId !== state.spotifySearchRequestId) {
       return;
     }
-  renderSpotifyMode(elements, "searching");
-  renderSpotifyResults(elements, [], () => {});
+    renderSpotifyMode(elements, "searching");
+    renderSpotifyResults(elements, [], () => {});
   }
+}
+
+function openSpotifyModal() {
+  if (!elements.spotifyModal) {
+    return;
+  }
+
+  if (typeof elements.spotifyModal.showModal === "function") {
+    if (!elements.spotifyModal.open) {
+      elements.spotifyModal.showModal();
+    }
+  } else {
+    elements.spotifyModal.setAttribute("open", "");
+  }
+
+  elements.spotifyModalTrigger?.setAttribute("aria-expanded", "true");
+  window.requestAnimationFrame(() => elements.spotifyQuery?.focus());
+}
+
+function closeSpotifyModal() {
+  if (!elements.spotifyModal) {
+    return;
+  }
+
+  if (typeof elements.spotifyModal.close === "function" && elements.spotifyModal.open) {
+    elements.spotifyModal.close();
+  } else {
+    elements.spotifyModal.removeAttribute("open");
+    elements.spotifyModalTrigger?.setAttribute("aria-expanded", "false");
+  }
+}
+
+function handleSpotifyModalBackdropClick(event) {
+  if (event.target === elements.spotifyModal) {
+    closeSpotifyModal();
+  }
+}
+
+function handleSpotifyModalClose() {
+  elements.spotifyModalTrigger?.setAttribute("aria-expanded", "false");
 }
 
 function handleSpotifyFilterChange(event) {
@@ -288,10 +335,11 @@ async function refreshDashboard({ showLoading = false } = {}) {
     renderSectors(elements, dashboardPayload.market.sectors);
     renderFooter(elements, dashboardPayload);
 
-    const [tradeSummaryResult, latestVideoResult, calendarResult, newsResult] = await Promise.allSettled([
+    const [tradeSummaryResult, latestVideoResult, calendarResult, economicResult, newsResult] = await Promise.allSettled([
       fetchTradeSummary(),
       fetchLatestVideo(),
       fetchCalendarEvents(),
+      fetchEconomicCalendar(),
       fetchWorldNews()
     ]);
 
@@ -322,6 +370,15 @@ async function refreshDashboard({ showLoading = false } = {}) {
       renderCalendarEvents(elements, state.lastCalendar);
     } else {
       renderCalendarEvents(elements, null);
+    }
+
+    if (economicResult.status === "fulfilled") {
+      state.lastEconomicCalendar = economicResult.value;
+      renderEconomicCalendar(elements, economicResult.value);
+    } else if (state.lastEconomicCalendar) {
+      renderEconomicCalendar(elements, state.lastEconomicCalendar);
+    } else {
+      renderEconomicCalendar(elements, null);
     }
 
     if (newsResult.status === "fulfilled") {
@@ -365,6 +422,10 @@ function handleThemeChange(event) {
 function bindEvents() {
   elements.cityButtons.forEach((button) => button.addEventListener("click", handleCityChange));
   elements.themeButtons.forEach((button) => button.addEventListener("click", handleThemeChange));
+  elements.spotifyModalTrigger?.addEventListener("click", openSpotifyModal);
+  elements.spotifyModalClose?.addEventListener("click", closeSpotifyModal);
+  elements.spotifyModal?.addEventListener("click", handleSpotifyModalBackdropClick);
+  elements.spotifyModal?.addEventListener("close", handleSpotifyModalClose);
   elements.spotifyFilterButtons.forEach((button) => button.addEventListener("click", handleSpotifyFilterChange));
   elements.spotifySearchForm?.addEventListener("submit", handleSpotifySearch);
   elements.spotifyQuery?.addEventListener("input", handleSpotifyInput);

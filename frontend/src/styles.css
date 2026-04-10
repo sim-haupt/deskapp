@@ -411,7 +411,9 @@ button:focus-visible {
 }
 
 .city-button,
-.theme-button {
+.theme-button,
+.footer-icon-button,
+.modal-close-button {
   border: 4px solid var(--line);
   background: linear-gradient(180deg, #3e2d66, #271d41);
   color: var(--ink);
@@ -434,6 +436,22 @@ button:focus-visible {
 .theme-button.is-active {
   background: var(--blue);
   color: var(--line);
+}
+
+.footer-icon-button {
+  justify-self: end;
+  width: 38px;
+  height: 34px;
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+  color: var(--green);
+  font-size: 0.42rem;
+  line-height: 1;
+}
+
+.spotify-footer-button {
+  background: linear-gradient(180deg, rgba(99, 245, 155, 0.28), rgba(99, 245, 155, 0.08)), var(--panel);
 }
 
 .ticker-strip {
@@ -472,12 +490,12 @@ button:focus-visible {
   grid-row: span 3;
 }
 
-.widget-spotify {
+.widget-calendar {
   grid-column: span 3;
   grid-row: span 3;
 }
 
-.widget-calendar {
+.widget-economic {
   grid-column: span 3;
   grid-row: span 3;
 }
@@ -565,6 +583,50 @@ button:focus-visible {
   border: 0;
   display: block;
   background: #000;
+}
+
+.spotify-modal {
+  width: min(680px, calc(100vw - 2rem));
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  border: 4px solid var(--line);
+  background: var(--panel);
+  color: var(--ink);
+  box-shadow:
+    0 0 0 4px var(--purple),
+    8px 8px 0 var(--shadow);
+}
+
+.spotify-modal::backdrop {
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.03) 0 2px,
+      rgba(0, 0, 0, 0.08) 2px 4px
+    ),
+    rgba(7, 5, 16, 0.78);
+}
+
+.spotify-modal-panel {
+  min-height: min(520px, calc(100dvh - 2rem));
+  max-height: calc(100dvh - 2rem);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.spotify-modal-header {
+  align-items: center;
+}
+
+.modal-close-button {
+  flex: 0 0 auto;
+  padding: 5px 8px 4px;
+  background: var(--red);
+  color: var(--line);
+  font-size: 0.42rem;
+  line-height: 1;
 }
 
 .spotify-widget-body {
@@ -817,6 +879,80 @@ button:focus-visible {
   align-content: start;
 }
 
+.economic-list,
+.economic-day-events {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  align-content: start;
+}
+
+.economic-day-group {
+  display: grid;
+  gap: 6px;
+  padding: 0 0 10px;
+  border-bottom: 4px solid rgba(73, 183, 255, 0.22);
+}
+
+.economic-day-group + .economic-day-group {
+  padding-top: 10px;
+}
+
+.economic-day-group:last-child {
+  border-bottom: 0;
+}
+
+.economic-day-heading {
+  margin: 0;
+  color: var(--orange);
+  font-size: 0.44rem;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.economic-row {
+  display: grid;
+  gap: 5px;
+  padding: 6px 0;
+}
+
+.economic-link {
+  color: var(--ink);
+  font-size: clamp(0.46rem, 0.6vw, 0.62rem);
+  line-height: 1.4;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.economic-link:hover,
+.economic-link:focus-visible {
+  color: var(--orange);
+}
+
+.economic-meta,
+.economic-detail {
+  font-size: 0.38rem;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.economic-meta {
+  color: var(--blue);
+}
+
+.economic-row.impact-high .economic-meta {
+  color: var(--red);
+}
+
+.economic-row.impact-medium .economic-meta {
+  color: var(--orange);
+}
+
+.economic-detail {
+  color: rgba(248, 242, 223, 0.7);
+}
+
 .news-row {
   display: grid;
   gap: 6px;
@@ -1008,7 +1144,7 @@ button:focus-visible {
     linear-gradient(180deg, var(--footer-highlight), transparent 45%),
     var(--panel);
   display: grid;
-  grid-template-columns: auto auto auto 1fr;
+  grid-template-columns: auto auto auto auto 1fr;
   align-items: center;
   gap: 12px;
   padding: 10px 14px;
@@ -1107,12 +1243,12 @@ button:focus-visible {
     grid-row: span 1;
   }
 
-  .widget-spotify {
+  .widget-calendar {
     grid-column: span 1;
     grid-row: span 1;
   }
 
-  .widget-calendar {
+  .widget-economic {
     grid-column: span 1;
     grid-row: span 1;
   }
@@ -1153,7 +1289,7 @@ button:focus-visible {
   }
 
   .footer-strip {
-    grid-template-columns: auto auto auto 1fr;
+    grid-template-columns: auto auto auto auto 1fr;
     gap: 10px;
   }
 
@@ -1242,8 +1378,8 @@ button:focus-visible {
 
   .widget-secondary,
   .widget-video,
-  .widget-spotify,
   .widget-calendar,
+  .widget-economic,
   .widget-news {
     grid-column: span 1;
     grid-row: span 1;
@@ -1256,7 +1392,7 @@ button:focus-visible {
   }
 
   .footer-strip {
-    grid-template-columns: auto auto auto 1fr;
+    grid-template-columns: auto auto auto auto 1fr;
     gap: 10px;
   }
 
@@ -1394,12 +1530,12 @@ button:focus-visible {
     grid-row: span 1;
   }
 
-  .widget-spotify {
+  .widget-calendar {
     grid-column: span 1;
     grid-row: span 1;
   }
 
-  .widget-calendar {
+  .widget-economic {
     grid-column: span 1;
     grid-row: span 1;
   }
@@ -1479,7 +1615,7 @@ button:focus-visible {
 
 @media (max-width: 520px) {
   .footer-strip {
-    grid-template-columns: auto auto auto 1fr;
+    grid-template-columns: auto auto auto auto 1fr;
     align-items: center;
     gap: 8px;
   }

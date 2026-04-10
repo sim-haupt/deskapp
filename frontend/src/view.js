@@ -202,6 +202,67 @@ function createNewsItem(item) {
   return row;
 }
 
+function createEconomicEventItem(event) {
+  const row = document.createElement("li");
+  row.className = `economic-row impact-${String(event.impact || "unknown").toLowerCase()}`;
+
+  const title = document.createElement("a");
+  title.className = "economic-link";
+  title.href = event.link || "#";
+  title.target = "_blank";
+  title.rel = "noopener noreferrer";
+  title.textContent = event.title || "Economic event";
+
+  const meta = document.createElement("span");
+  meta.className = "economic-meta";
+  meta.textContent = `${event.country || "--"} | ${event.time || "--"} | ${event.impact || "--"}`;
+
+  row.append(title, meta);
+
+  if (event.forecast || event.previous) {
+    const detail = document.createElement("span");
+    detail.className = "economic-detail";
+    detail.textContent = `F ${event.forecast || "--"} | P ${event.previous || "--"}`;
+    row.append(detail);
+  }
+
+  return row;
+}
+
+function createEconomicDayGroup(dayKey, events) {
+  const item = document.createElement("li");
+  item.className = "economic-day-group";
+
+  const heading = document.createElement("h3");
+  heading.className = "economic-day-heading";
+  heading.textContent = formatCalendarDayHeading(dayKey);
+
+  const list = document.createElement("ul");
+  list.className = "economic-day-events";
+  list.replaceChildren(...events.map(createEconomicEventItem));
+
+  item.append(heading, list);
+  return item;
+}
+
+function groupEconomicEventsByDay(events) {
+  return events.reduce((groups, event) => {
+    const dayKey = event.dateKey || "unknown";
+    const existingGroup = groups.find((group) => group.dayKey === dayKey);
+
+    if (existingGroup) {
+      existingGroup.events.push(event);
+      return groups;
+    }
+
+    groups.push({
+      dayKey,
+      events: [event]
+    });
+    return groups;
+  }, []);
+}
+
 function groupCalendarEventsByDay(events) {
   return events.reduce((groups, event) => {
     const dayKey = event.startsAt ? event.startsAt.slice(0, 10) : "unknown";
@@ -400,6 +461,25 @@ export function renderCalendarEvents(elements, payload) {
   replaceChildren(
     elements.calendarList,
     groups.map((group) => createCalendarDayGroup(group.dayKey, group.events))
+  );
+}
+
+export function renderEconomicCalendar(elements, payload) {
+  if (!elements.economicList) {
+    return;
+  }
+
+  const events = Array.isArray(payload?.events) ? payload.events : [];
+
+  if (events.length === 0) {
+    replaceChildren(elements.economicList, []);
+    return;
+  }
+
+  const groups = groupEconomicEventsByDay(events);
+  replaceChildren(
+    elements.economicList,
+    groups.map((group) => createEconomicDayGroup(group.dayKey, group.events))
   );
 }
 

@@ -115,6 +115,22 @@ export async function fetchWorldNews() {
   return response.json();
 }
 
+export async function fetchEconomicCalendar() {
+  const response = await fetch(buildApiUrl("/api/economic-calendar"), {
+    method: "GET",
+    headers: {
+      Accept: "application/json"
+    },
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+  });
+
+  if (!response.ok) {
+    throw new Error(`Economic calendar request failed with status ${response.status}.`);
+  }
+
+  return response.json();
+}
+
 export async function fetchSpotifySearch(query, limit = 40, type = "all") {
   const response = await fetch(
     buildApiUrl("/api/spotify/search", {
