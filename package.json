@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "node server.js"
+    "build:frontend": "npm --prefix frontend run build",
+    "check:backend": "npm --prefix backend run check",
+    "dev:backend": "npm --prefix backend run dev",
+    "start:backend": "npm --prefix backend run start"
   }
 }

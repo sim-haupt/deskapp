@@ -1,72 +1,117 @@
 # Pixel Desk Deployment
 
-This repo is now split into two deploy targets:
+Pixel Desk is split into two deploy targets:
 
-- `frontend/` for Vercel
-- `backend/` for Railway
+- `frontend/` is a static vanilla JavaScript app built for Vercel
+- `backend/` is an Express API built for Railway
 
-## Railway Backend
+## Local setup
 
-Deploy the [`backend`](/Users/szy/Documents/GitHub/deskapp/backend) folder as its own service.
-
-Set these environment variables:
-
-- `ALPACA_KEY_ID`
-- `ALPACA_SECRET_KEY`
-- `FRONTEND_ORIGIN`
-
-Example `FRONTEND_ORIGIN` values:
-
-- `https://your-app.vercel.app`
-- `https://your-production-domain.com`
-
-You can also allow multiple origins with a comma-separated list:
-
-```env
-FRONTEND_ORIGIN=https://your-app.vercel.app,https://your-app-git-main-yourteam.vercel.app
-```
-
-The backend exposes:
-
-- `GET /health`
-- `GET /api/market/banner`
-- `GET /api/universe?priceMin=2&priceMax=20&maxVolume=50000000&limit=8`
-
-## Vercel Frontend
-
-Deploy the [`frontend`](/Users/szy/Documents/GitHub/deskapp/frontend) folder as its own project.
-
-Set this build environment variable in Vercel:
-
-- `PIXEL_DESK_API_BASE_URL`
-
-Example:
-
-```env
-PIXEL_DESK_API_BASE_URL=https://your-railway-service.up.railway.app
-```
-
-Vercel should use:
-
-- Root Directory: `frontend`
-- Build Command: `npm run build`
-- Output Directory: `dist`
-
-## Local Development
-
-Backend:
+1. Install backend dependencies:
 
 ```bash
 cd backend
+npm install
 cp .env.example .env
-npm start
 ```
 
-Frontend build:
+2. Fill in the backend environment variables:
+
+- `ALPACA_KEY_ID`
+- `ALPACA_SECRET_KEY`
+- `FRONTEND_ORIGINS`
+- `EXTERNAL_TIMEOUT_MS` optional, defaults to `12000`
+
+3. Start the backend:
+
+```bash
+cd backend
+npm run dev
+```
+
+4. Build the frontend with the local backend URL:
 
 ```bash
 cd frontend
 PIXEL_DESK_API_BASE_URL=http://localhost:3000 npm run build
 ```
 
-Then serve `frontend/dist` with any static server, or inspect the built files before deploying to Vercel.
+5. Serve `frontend/dist` with any static file server when you want to preview the built frontend locally.
+
+## Environment variables
+
+### Frontend
+
+The frontend only needs one build-time variable:
+
+```env
+PIXEL_DESK_API_BASE_URL=https://your-backend-domain.up.railway.app
+```
+
+`frontend/.env.example` is a reference file. The current build script reads `PIXEL_DESK_API_BASE_URL` from the shell or your hosting provider's environment settings.
+
+Recommended values:
+
+- Local: `http://localhost:3000`
+- Staging: your Railway staging URL
+- Production: your Railway production URL
+
+### Backend
+
+The backend requires:
+
+```env
+ALPACA_KEY_ID=your_alpaca_key_id
+ALPACA_SECRET_KEY=your_alpaca_secret_key
+FRONTEND_ORIGINS=https://your-app.vercel.app,https://your-preview-domain.vercel.app
+EXTERNAL_TIMEOUT_MS=12000
+```
+
+Recommended values:
+
+- Local: allow localhost origins such as `http://localhost:4173`
+- Staging: include your Vercel preview URL and staging custom domain if you use one
+- Production: include only the production Vercel domain and any approved preview domains you want to keep
+
+## Vercel frontend
+
+Deploy the `frontend/` directory as its own Vercel project.
+
+Recommended project settings:
+
+- Root Directory: `frontend`
+- Build Command: `npm run build`
+- Output Directory: `dist`
+
+Add this environment variable in Vercel:
+
+```env
+PIXEL_DESK_API_BASE_URL=https://your-railway-service.up.railway.app
+```
+
+The repo already includes [`frontend/vercel.json`](/Users/szy/Documents/GitHub/deskapp/frontend/vercel.json).
+
+## Railway backend
+
+Deploy the `backend/` directory as its own Railway service.
+
+Railway should run:
+
+- Install: `npm install`
+- Start: `npm start`
+
+The backend listens on `0.0.0.0:$PORT`, which matches Railway’s public networking model.
+
+Add these Railway variables:
+
+- `ALPACA_KEY_ID`
+- `ALPACA_SECRET_KEY`
+- `FRONTEND_ORIGINS`
+- `EXTERNAL_TIMEOUT_MS` optional
+
+The repo already includes [`backend/railway.json`](/Users/szy/Documents/GitHub/deskapp/backend/railway.json).
+
+## Available endpoints
+
+- `GET /health`
+- `GET /api/dashboard?city=langen&priceMin=2&priceMax=20&maxVolume=50000000&limit=8`
