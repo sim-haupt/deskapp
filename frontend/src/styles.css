@@ -1010,9 +1010,14 @@ button:focus-visible {
   .main-content {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: auto;
+    align-items: start;
     gap: 10px;
     overflow: visible;
     padding-right: 0;
+  }
+
+  .widget {
+    align-self: start;
   }
 
   .widget-primary {
@@ -1093,6 +1098,7 @@ button:focus-visible {
   }
 
   .main-content {
+    align-items: start;
     gap: 9px;
   }
 
