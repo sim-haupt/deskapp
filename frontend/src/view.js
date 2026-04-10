@@ -223,15 +223,6 @@ export function renderLatestVideo(elements, video) {
   elements.latestVideoFrame.title = video.title || "Latest video from DaytradeWarrior";
 }
 
-export function renderSpotifyStatus(elements, message, tone = "neutral") {
-  if (!elements.spotifyStatus) {
-    return;
-  }
-
-  elements.spotifyStatus.textContent = message;
-  elements.spotifyStatus.dataset.tone = tone;
-}
-
 export function renderSpotifyMode(elements, mode) {
   const body = elements.spotifyWidgetBody;
 
@@ -243,12 +234,17 @@ export function renderSpotifyMode(elements, mode) {
   body.classList.toggle("is-playing", mode === "playing");
 }
 
-export function renderSpotifyResults(elements, results, onSelect, emptyMessage = "No results found.") {
+export function renderSpotifyResults(elements, results, onSelect, emptyMessage = "") {
   if (!elements.spotifyResults) {
     return;
   }
 
   if (!Array.isArray(results) || results.length === 0) {
+    if (!emptyMessage) {
+      replaceChildren(elements.spotifyResults, []);
+      return;
+    }
+
     const empty = document.createElement("li");
     empty.className = "spotify-result-empty";
     empty.textContent = emptyMessage;

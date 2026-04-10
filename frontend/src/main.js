@@ -143,7 +143,7 @@ function parseSpotifyInput(value) {
   return null;
 }
 
-function loadSpotifyItem(item, statusMessage) {
+function loadSpotifyItem(item) {
   state.selectedSpotifyItem = item;
   renderSpotifyResults(elements, [], () => {});
   renderSpotifyEmbed(elements, item);
@@ -163,7 +163,7 @@ async function searchSpotify(query) {
 
   if (directItem) {
     state.lastSpotifyResults = [];
-    loadSpotifyItem(directItem, "Loaded Spotify link.");
+    loadSpotifyItem(directItem);
     return;
   }
 
@@ -184,18 +184,18 @@ async function searchSpotify(query) {
     renderSpotifyMode(elements, "searching");
 
     renderSpotifyResults(elements, results, (item) => {
-      loadSpotifyItem(item, `Loaded ${item.type}: ${item.title}`);
+      loadSpotifyItem(item);
     });
 
     if (results.length === 0) {
-      renderSpotifyResults(elements, [], () => {}, `No results for "${query}".`);
+      renderSpotifyResults(elements, [], () => {});
     }
   } catch (error) {
     if (requestId !== state.spotifySearchRequestId) {
       return;
     }
     renderSpotifyMode(elements, "searching");
-    renderSpotifyResults(elements, [], () => {}, "Spotify search unavailable.");
+    renderSpotifyResults(elements, [], () => {});
   }
 }
 
