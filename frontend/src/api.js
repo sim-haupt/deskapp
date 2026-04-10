@@ -83,11 +83,12 @@ export async function fetchLatestVideo() {
   return response.json();
 }
 
-export async function fetchSpotifySearch(query, limit = 40) {
+export async function fetchSpotifySearch(query, limit = 40, type = "all") {
   const response = await fetch(
     buildApiUrl("/api/spotify/search", {
       q: query,
-      limit
+      limit,
+      type
     }),
     {
       method: "GET",

@@ -1,6 +1,8 @@
 const { cities } = require("./data");
 const HttpError = require("./http-error");
 
+const spotifySearchTypes = new Set(["all", "track", "album", "artist", "playlist", "podcast", "show"]);
+
 function parseDashboardQuery(query) {
   const city = String(query.city || "langen").trim().toLowerCase();
 
@@ -15,9 +17,14 @@ function parseDashboardQuery(query) {
 
 function parseSpotifySearchQuery(query) {
   const q = String(query.q || "").trim();
+  const type = String(query.type || "all").trim().toLowerCase();
 
   if (!q) {
     throw new HttpError(400, "q is required.");
+  }
+
+  if (!spotifySearchTypes.has(type)) {
+    throw new HttpError(400, "type must be one of: all, track, album, artist, playlist, podcast.");
   }
 
   const parsedLimit = Number(query.limit);
@@ -27,7 +34,8 @@ function parseSpotifySearchQuery(query) {
 
   return {
     q,
-    limit
+    limit,
+    type: type === "podcast" ? "show" : type
   };
 }
 

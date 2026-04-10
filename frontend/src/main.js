@@ -31,6 +31,7 @@ const SPOTIFY_SEARCH_DEBOUNCE_MS = 350;
 const STORAGE_KEY = "pixel-desk-theme";
 const DEFAULT_THEME = "arcade";
 const DEFAULT_CITY = "langen";
+const DEFAULT_SPOTIFY_TYPE = "all";
 
 const elements = {
   currentDate: document.querySelector("#current-date"),
@@ -50,6 +51,7 @@ const elements = {
   spotifyWidgetBody: document.querySelector(".spotify-widget-body"),
   spotifySearchForm: document.querySelector("#spotify-search-form"),
   spotifyQuery: document.querySelector("#spotify-query"),
+  spotifyFilterButtons: [...document.querySelectorAll(".spotify-filter-button")],
   spotifyResults: document.querySelector("#spotify-results"),
   spotifyPlayerFrame: document.querySelector("#spotify-player-frame"),
   tickerTrackA: document.querySelector("#ticker-track-a"),
@@ -70,6 +72,7 @@ const state = {
   lastTradeSummary: null,
   lastVideo: null,
   lastSpotifyResults: [],
+  activeSpotifyType: DEFAULT_SPOTIFY_TYPE,
   spotifySearchTimer: null,
   spotifySearchRequestId: 0,
   selectedSpotifyItem: null,
@@ -105,6 +108,14 @@ function updateClock() {
   renderSession(elements, getSessionState(now));
 }
 
+function renderSpotifyFilters() {
+  elements.spotifyFilterButtons.forEach((button) => {
+    const isActive = button.dataset.spotifyType === state.activeSpotifyType;
+    button.classList.toggle("is-active", isActive);
+    button.setAttribute("aria-pressed", String(isActive));
+  });
+}
+
 function parseSpotifyInput(value) {
   const raw = String(value || "").trim();
 
@@ -112,13 +123,14 @@ function parseSpotifyInput(value) {
     return null;
   }
 
-  const urlMatch = raw.match(/open\.spotify\.com\/(track|album|artist|playlist)\/([A-Za-z0-9]+)/i);
+  const urlMatch = raw.match(/open\.spotify\.com\/(track|album|artist|playlist|show)\/([A-Za-z0-9]+)/i);
 
   if (urlMatch) {
     const [, type, id] = urlMatch;
+    const normalizedType = type.toLowerCase() === "show" ? "podcast" : type.toLowerCase();
 
     return {
-      type: type.toLowerCase(),
+      type: normalizedType,
       id,
       title: raw,
       subtitle: "Direct Spotify link",
@@ -126,13 +138,14 @@ function parseSpotifyInput(value) {
     };
   }
 
-  const uriMatch = raw.match(/^spotify:(track|album|artist|playlist):([A-Za-z0-9]+)$/i);
+  const uriMatch = raw.match(/^spotify:(track|album|artist|playlist|show):([A-Za-z0-9]+)$/i);
 
   if (uriMatch) {
     const [, type, id] = uriMatch;
+    const normalizedType = type.toLowerCase() === "show" ? "podcast" : type.toLowerCase();
 
     return {
-      type: type.toLowerCase(),
+      type: normalizedType,
       id,
       title: raw,
       subtitle: "Direct Spotify URI",
@@ -173,7 +186,7 @@ async function searchSpotify(query) {
   renderSpotifyEmbed(elements, null);
 
   try {
-    const payload = await fetchSpotifySearch(query, 40);
+    const payload = await fetchSpotifySearch(query, 40, state.activeSpotifyType);
 
     if (requestId !== state.spotifySearchRequestId) {
       return;
@@ -197,6 +210,19 @@ async function searchSpotify(query) {
     renderSpotifyMode(elements, "searching");
     renderSpotifyResults(elements, [], () => {});
   }
+}
+
+function handleSpotifyFilterChange(event) {
+  const nextType = event.currentTarget.dataset.spotifyType || DEFAULT_SPOTIFY_TYPE;
+
+  if (nextType === state.activeSpotifyType) {
+    return;
+  }
+
+  state.activeSpotifyType = nextType;
+  renderSpotifyFilters();
+  window.clearTimeout(state.spotifySearchTimer);
+  searchSpotify(elements.spotifyQuery?.value?.trim() || "");
 }
 
 function handleSpotifySearch(event) {
@@ -308,6 +334,7 @@ function handleThemeChange(event) {
 function bindEvents() {
   elements.cityButtons.forEach((button) => button.addEventListener("click", handleCityChange));
   elements.themeButtons.forEach((button) => button.addEventListener("click", handleThemeChange));
+  elements.spotifyFilterButtons.forEach((button) => button.addEventListener("click", handleSpotifyFilterChange));
   elements.spotifySearchForm?.addEventListener("submit", handleSpotifySearch);
   elements.spotifyQuery?.addEventListener("input", handleSpotifyInput);
 }
@@ -315,6 +342,7 @@ function bindEvents() {
 function init() {
   applyTheme(state.activeTheme);
   renderControls(elements, state);
+  renderSpotifyFilters();
   renderLoadingState(elements, state.activeCity);
   renderSpotifyMode(elements, "searching");
   renderSpotifyResults(elements, [], () => {});

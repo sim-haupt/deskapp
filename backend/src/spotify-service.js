@@ -4,10 +4,11 @@ const { env } = require("./env");
 
 const tokenCache = new MemoryCache();
 const TOKEN_CACHE_KEY = "spotify-access-token";
-const SEARCH_TYPES = ["track", "album", "playlist", "artist"];
+const SEARCH_TYPES = ["track", "album", "artist", "playlist", "show"];
 
 function buildEmbedUrl(type, id) {
-  return `https://open.spotify.com/embed/${type}/${id}?utm_source=generator&theme=0`;
+  const embedType = type === "podcast" ? "show" : type;
+  return `https://open.spotify.com/embed/${embedType}/${id}?utm_source=generator&theme=0`;
 }
 
 function createItem(type, item) {
@@ -56,6 +57,18 @@ function createItem(type, item) {
     };
   }
 
+  if (type === "show") {
+    return {
+      id: item.id,
+      type: "podcast",
+      uri: item.uri,
+      title: item.name,
+      subtitle: (item.publisher || "Podcast").trim(),
+      imageUrl: image,
+      embedUrl: buildEmbedUrl("podcast", item.id)
+    };
+  }
+
   if (type === "artist") {
     return {
       id: item.id,
@@ -71,15 +84,24 @@ function createItem(type, item) {
   return null;
 }
 
-function rankResults(payload, requestedLimit) {
+function getSearchTypes(type) {
+  if (!type || type === "all") {
+    return SEARCH_TYPES;
+  }
+
+  return SEARCH_TYPES.includes(type) ? [type] : SEARCH_TYPES;
+}
+
+function rankResults(payload, requestedLimit, searchTypes) {
   const buckets = {
     track: payload.tracks?.items || [],
     album: payload.albums?.items || [],
     playlist: payload.playlists?.items || [],
-    artist: payload.artists?.items || []
+    artist: payload.artists?.items || [],
+    show: payload.shows?.items || []
   };
 
-  return SEARCH_TYPES.flatMap((type) => buckets[type].map((item) => createItem(type, item)))
+  return searchTypes.flatMap((type) => buckets[type].map((item) => createItem(type, item)))
     .filter(Boolean)
     .slice(0, requestedLimit);
 }
@@ -129,12 +151,13 @@ async function getSpotifyAccessToken() {
   return accessToken;
 }
 
-async function searchSpotify(query, { limit = 8 } = {}) {
+async function searchSpotify(query, { limit = 8, type = "all" } = {}) {
   const token = await getSpotifyAccessToken();
-  const perTypeLimit = Math.min(50, Math.max(1, Math.ceil(limit / SEARCH_TYPES.length)));
+  const searchTypes = getSearchTypes(type);
+  const perTypeLimit = Math.min(50, Math.max(1, Math.ceil(limit / searchTypes.length)));
   const url = new URL("https://api.spotify.com/v1/search");
   url.searchParams.set("q", query);
-  url.searchParams.set("type", SEARCH_TYPES.join(","));
+  url.searchParams.set("type", searchTypes.join(","));
   url.searchParams.set("limit", String(perTypeLimit));
   url.searchParams.set("market", "DE");
 
@@ -157,10 +180,11 @@ async function searchSpotify(query, { limit = 8 } = {}) {
   }
 
   const payload = await response.json();
-  const results = rankResults(payload, limit);
+  const results = rankResults(payload, limit, searchTypes);
 
   return {
     query,
+    type,
     results
   };
 }

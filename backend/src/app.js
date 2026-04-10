@@ -113,7 +113,8 @@ app.get("/api/spotify/search", async (request, response, next) => {
   try {
     const query = parseSpotifySearchQuery(request.query);
     const payload = await searchSpotify(query.q, {
-      limit: query.limit
+      limit: query.limit,
+      type: query.type
     });
     response.status(200).json(payload);
   } catch (error) {
