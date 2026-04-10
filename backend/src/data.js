@@ -17,7 +17,10 @@ const stockSymbols = [
   { symbol: "SPY", label: "SPY" },
   { symbol: "IWM", label: "RUSSELL 2000" },
   { symbol: "QQQ", label: "NASDAQ" },
-  { symbol: "DIA", label: "DOW" }
+  { symbol: "DIA", label: "DOW" },
+  { symbol: "NVDA", label: "NVDA" },
+  { symbol: "AMZN", label: "AMZN" },
+  { symbol: "GOOGL", label: "GOOGL" }
 ];
 
 const weatherCodes = {
