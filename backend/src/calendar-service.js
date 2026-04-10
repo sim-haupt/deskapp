@@ -134,9 +134,8 @@ async function getCalendarEvents({ limit = DEFAULT_EVENT_LIMIT } = {}) {
   const events = parseEvents(icsText)
     .filter((event) => {
       const startsAt = Date.parse(event.startsAt);
-      const endsAt = event.endsAt ? Date.parse(event.endsAt) : Date.parse(event.startsAt);
 
-      return endsAt >= windowStart.getTime() && startsAt <= windowEnd.getTime();
+      return startsAt >= windowStart.getTime() && startsAt <= windowEnd.getTime();
     })
     .sort((a, b) => Date.parse(a.startsAt) - Date.parse(b.startsAt))
     .slice(0, limit);
