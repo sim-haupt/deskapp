@@ -4,6 +4,7 @@ const { env } = require("./env");
 const HttpError = require("./http-error");
 const logger = require("./logger");
 const { parseDashboardQuery, parseSpotifySearchQuery } = require("./validation");
+const { getCalendarEvents } = require("./calendar-service");
 const { getDashboardPayload } = require("./dashboard-service");
 const { searchSpotify } = require("./spotify-service");
 const { getLatestYoutubeVideo } = require("./youtube-service");
@@ -103,6 +104,15 @@ app.get("/api/dashboard", async (request, response, next) => {
   try {
     const query = parseDashboardQuery(request.query);
     const payload = await getDashboardPayload(query);
+    response.status(200).json(payload);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/api/calendar/events", async (_request, response, next) => {
+  try {
+    const payload = await getCalendarEvents();
     response.status(200).json(payload);
   } catch (error) {
     next(error);

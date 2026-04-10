@@ -477,6 +477,11 @@ button:focus-visible {
   grid-row: span 3;
 }
 
+.widget-calendar {
+  grid-column: span 3;
+  grid-row: span 3;
+}
+
 .widget {
   min-height: 0;
   background: var(--panel);
@@ -729,6 +734,49 @@ button:focus-visible {
   border: 0;
   display: block;
   background: rgba(0, 0, 0, 0.28);
+}
+
+.calendar-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.calendar-event-row {
+  display: grid;
+  gap: 6px;
+  padding: 8px 0;
+  border-bottom: 4px solid rgba(73, 183, 255, 0.22);
+}
+
+.calendar-event-row:last-child {
+  border-bottom: 0;
+}
+
+.calendar-event-title,
+.calendar-event-meta,
+.calendar-event-location {
+  display: block;
+  text-transform: uppercase;
+}
+
+.calendar-event-title {
+  font-size: clamp(0.48rem, 0.62vw, 0.66rem);
+  line-height: 1.35;
+}
+
+.calendar-event-meta,
+.calendar-event-location {
+  font-size: 0.4rem;
+  line-height: 1.35;
+  color: rgba(248, 242, 223, 0.72);
+}
+
+.calendar-event-meta {
+  color: var(--blue);
 }
 
 .metric-list {
@@ -995,6 +1043,11 @@ button:focus-visible {
     grid-row: span 1;
   }
 
+  .widget-calendar {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+
   .status-row {
     flex-wrap: wrap;
     align-items: center;
@@ -1115,7 +1168,8 @@ button:focus-visible {
 
   .widget-secondary,
   .widget-video,
-  .widget-spotify {
+  .widget-spotify,
+  .widget-calendar {
     grid-column: span 1;
     grid-row: span 1;
   }
@@ -1266,6 +1320,11 @@ button:focus-visible {
   }
 
   .widget-spotify {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+
+  .widget-calendar {
     grid-column: span 1;
     grid-row: span 1;
   }

@@ -2,6 +2,7 @@ import { cities, getWeatherIconUrl } from "./app-data.js";
 import {
   formatClock,
   formatCountdown,
+  formatCalendarEventTime,
   formatDateLabel,
   formatPercent,
   formatPrice,
@@ -134,6 +135,31 @@ function createSpotifyResultItem(item, onSelect) {
   button.append(title, meta);
   listItem.append(button);
   return listItem;
+}
+
+function createCalendarEventItem(event) {
+  const item = document.createElement("li");
+  item.className = "calendar-event-row";
+
+  const title = document.createElement("strong");
+  title.className = "calendar-event-title";
+  title.textContent = event.title || "Untitled event";
+
+  const meta = document.createElement("span");
+  meta.className = "calendar-event-meta";
+  const dateLabel = formatCalendarEventTime(event.startsAt, event.allDay);
+  meta.textContent = event.allDay ? `${dateLabel} | ALL DAY` : dateLabel;
+
+  item.append(title, meta);
+
+  if (event.location) {
+    const location = document.createElement("span");
+    location.className = "calendar-event-location";
+    location.textContent = event.location;
+    item.append(location);
+  }
+
+  return item;
 }
 
 function replaceChildren(target, children) {
@@ -293,6 +319,26 @@ export function renderSpotifyEmbed(elements, item) {
   elements.spotifyPlayerFrame.title = item.title
     ? `Spotify player for ${item.title}`
     : "Spotify player";
+}
+
+export function renderCalendarEvents(elements, payload) {
+  if (!elements.calendarList) {
+    return;
+  }
+
+  if (!payload?.configured) {
+    replaceChildren(elements.calendarList, []);
+    return;
+  }
+
+  const events = Array.isArray(payload.events) ? payload.events : [];
+
+  if (events.length === 0) {
+    replaceChildren(elements.calendarList, []);
+    return;
+  }
+
+  replaceChildren(elements.calendarList, events.map(createCalendarEventItem));
 }
 
 export function renderRecentDays(elements, lastSevenDays) {

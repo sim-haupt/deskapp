@@ -1,5 +1,6 @@
 import { cities } from "./app-data.js";
 import {
+  fetchCalendarEvents,
   fetchDashboard,
   fetchLatestVideo,
   fetchSpotifySearch,
@@ -7,6 +8,7 @@ import {
 } from "./api.js";
 import {
   renderClock,
+  renderCalendarEvents,
   renderControls,
   renderFooter,
   renderLatestVideo,
@@ -55,6 +57,7 @@ const elements = {
   spotifyFilterButtons: [...document.querySelectorAll(".spotify-filter-button")],
   spotifyResults: document.querySelector("#spotify-results"),
   spotifyPlayerFrame: document.querySelector("#spotify-player-frame"),
+  calendarList: document.querySelector("#calendar-list"),
   tickerTrackA: document.querySelector("#ticker-track-a"),
   tickerTrackB: document.querySelector("#ticker-track-b"),
   sectorList: document.querySelector("#sector-list"),
@@ -72,6 +75,7 @@ const state = {
   lastPayload: null,
   lastTradeSummary: null,
   lastVideo: null,
+  lastCalendar: null,
   lastSpotifyResults: [],
   activeSpotifyType: DEFAULT_SPOTIFY_TYPE,
   spotifySearchTimer: null,
@@ -280,9 +284,10 @@ async function refreshDashboard({ showLoading = false } = {}) {
     renderSectors(elements, dashboardPayload.market.sectors);
     renderFooter(elements, dashboardPayload);
 
-    const [tradeSummaryResult, latestVideoResult] = await Promise.allSettled([
+    const [tradeSummaryResult, latestVideoResult, calendarResult] = await Promise.allSettled([
       fetchTradeSummary(),
-      fetchLatestVideo()
+      fetchLatestVideo(),
+      fetchCalendarEvents()
     ]);
 
     if (tradeSummaryResult.status === "fulfilled") {
@@ -303,6 +308,15 @@ async function refreshDashboard({ showLoading = false } = {}) {
       renderLatestVideo(elements, state.lastVideo);
     } else {
       renderLatestVideo(elements, null);
+    }
+
+    if (calendarResult.status === "fulfilled") {
+      state.lastCalendar = calendarResult.value;
+      renderCalendarEvents(elements, calendarResult.value);
+    } else if (state.lastCalendar) {
+      renderCalendarEvents(elements, state.lastCalendar);
+    } else {
+      renderCalendarEvents(elements, null);
     }
   } catch (error) {
     renderRefreshError(elements, error.message, Boolean(state.lastPayload));
