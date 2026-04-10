@@ -47,10 +47,13 @@ const env = {
   externalTimeoutMs: parseNumber(process.env.EXTERNAL_TIMEOUT_MS, 12000, { min: 1000, max: 30000 }),
   frontendOrigins: parseOrigins(process.env.FRONTEND_ORIGINS || process.env.FRONTEND_ORIGIN),
   alpacaKeyId: String(process.env.ALPACA_KEY_ID || "").trim(),
-  alpacaSecretKey: String(process.env.ALPACA_SECRET_KEY || "").trim()
+  alpacaSecretKey: String(process.env.ALPACA_SECRET_KEY || "").trim(),
+  spotifyClientId: String(process.env.SPOTIFY_CLIENT_ID || "").trim(),
+  spotifyClientSecret: String(process.env.SPOTIFY_CLIENT_SECRET || "").trim()
 };
 
 env.hasAlpacaCredentials = Boolean(env.alpacaKeyId && env.alpacaSecretKey);
+env.hasSpotifyCredentials = Boolean(env.spotifyClientId && env.spotifyClientSecret);
 
 module.exports = {
   env

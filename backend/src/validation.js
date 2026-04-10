@@ -13,6 +13,25 @@ function parseDashboardQuery(query) {
   };
 }
 
+function parseSpotifySearchQuery(query) {
+  const q = String(query.q || "").trim();
+
+  if (!q) {
+    throw new HttpError(400, "q is required.");
+  }
+
+  const parsedLimit = Number(query.limit);
+  const limit = Number.isFinite(parsedLimit)
+    ? Math.min(12, Math.max(1, Math.floor(parsedLimit)))
+    : 8;
+
+  return {
+    q,
+    limit
+  };
+}
+
 module.exports = {
-  parseDashboardQuery
+  parseDashboardQuery,
+  parseSpotifySearchQuery
 };

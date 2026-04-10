@@ -6,7 +6,8 @@ Pixel Desk is a retro-style market dashboard with:
 - market session timing
 - city-based weather
 - delayed Alpaca market quotes
-- a lightweight screened equity universe
+- a market ticker and sector overview
+- a Spotify search widget
 
 ## Repo layout
 

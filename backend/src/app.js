@@ -3,8 +3,9 @@ const helmet = require("helmet");
 const { env } = require("./env");
 const HttpError = require("./http-error");
 const logger = require("./logger");
-const { parseDashboardQuery } = require("./validation");
+const { parseDashboardQuery, parseSpotifySearchQuery } = require("./validation");
 const { getDashboardPayload } = require("./dashboard-service");
+const { searchSpotify } = require("./spotify-service");
 const { getLatestYoutubeVideo } = require("./youtube-service");
 
 const app = express();
@@ -102,6 +103,18 @@ app.get("/api/dashboard", async (request, response, next) => {
   try {
     const query = parseDashboardQuery(request.query);
     const payload = await getDashboardPayload(query);
+    response.status(200).json(payload);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/api/spotify/search", async (request, response, next) => {
+  try {
+    const query = parseSpotifySearchQuery(request.query);
+    const payload = await searchSpotify(query.q, {
+      limit: query.limit
+    });
     response.status(200).json(payload);
   } catch (error) {
     next(error);

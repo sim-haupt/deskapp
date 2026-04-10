@@ -82,3 +82,34 @@ export async function fetchLatestVideo() {
 
   return response.json();
 }
+
+export async function fetchSpotifySearch(query, limit = 8) {
+  const response = await fetch(
+    buildApiUrl("/api/spotify/search", {
+      q: query,
+      limit
+    }),
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json"
+      },
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+    }
+  );
+
+  if (!response.ok) {
+    let message = "Spotify search failed.";
+
+    try {
+      const payload = await response.json();
+      message = payload.error || message;
+    } catch {
+      message = `Spotify search request failed with status ${response.status}.`;
+    }
+
+    throw new Error(message);
+  }
+
+  return response.json();
+}

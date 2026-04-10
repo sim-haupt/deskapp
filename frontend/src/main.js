@@ -1,5 +1,10 @@
 import { cities } from "./app-data.js";
-import { fetchDashboard, fetchLatestVideo, fetchTradeSummary } from "./api.js";
+import {
+  fetchDashboard,
+  fetchLatestVideo,
+  fetchSpotifySearch,
+  fetchTradeSummary
+} from "./api.js";
 import {
   renderClock,
   renderControls,
@@ -10,6 +15,9 @@ import {
   renderRefreshError,
   renderSectors,
   renderSession,
+  renderSpotifyEmbed,
+  renderSpotifyResults,
+  renderSpotifyStatus,
   renderTradeSummary,
   renderTradeSummaryUnavailable,
   renderTicker,
@@ -38,6 +46,11 @@ const elements = {
   headerWeek: document.querySelector("#header-week"),
   headerToday: document.querySelector("#header-today"),
   latestVideoFrame: document.querySelector("#latest-video-frame"),
+  spotifySearchForm: document.querySelector("#spotify-search-form"),
+  spotifyQuery: document.querySelector("#spotify-query"),
+  spotifyStatus: document.querySelector("#spotify-status"),
+  spotifyResults: document.querySelector("#spotify-results"),
+  spotifyPlayerFrame: document.querySelector("#spotify-player-frame"),
   tickerTrackA: document.querySelector("#ticker-track-a"),
   tickerTrackB: document.querySelector("#ticker-track-b"),
   sectorList: document.querySelector("#sector-list"),
@@ -55,6 +68,8 @@ const state = {
   lastPayload: null,
   lastTradeSummary: null,
   lastVideo: null,
+  lastSpotifyResults: [],
+  selectedSpotifyItem: null,
   refreshInFlight: false
 };
 
@@ -85,6 +100,95 @@ function updateClock() {
   const now = new Date();
   renderClock(elements, now);
   renderSession(elements, getSessionState(now));
+}
+
+function parseSpotifyInput(value) {
+  const raw = String(value || "").trim();
+
+  if (!raw) {
+    return null;
+  }
+
+  const urlMatch = raw.match(/open\.spotify\.com\/(track|album|artist|playlist)\/([A-Za-z0-9]+)/i);
+
+  if (urlMatch) {
+    const [, type, id] = urlMatch;
+
+    return {
+      type: type.toLowerCase(),
+      id,
+      title: raw,
+      subtitle: "Direct Spotify link",
+      embedUrl: `https://open.spotify.com/embed/${type.toLowerCase()}/${id}?utm_source=generator&theme=0`
+    };
+  }
+
+  const uriMatch = raw.match(/^spotify:(track|album|artist|playlist):([A-Za-z0-9]+)$/i);
+
+  if (uriMatch) {
+    const [, type, id] = uriMatch;
+
+    return {
+      type: type.toLowerCase(),
+      id,
+      title: raw,
+      subtitle: "Direct Spotify URI",
+      embedUrl: `https://open.spotify.com/embed/${type.toLowerCase()}/${id}?utm_source=generator&theme=0`
+    };
+  }
+
+  return null;
+}
+
+function loadSpotifyItem(item, statusMessage) {
+  state.selectedSpotifyItem = item;
+  renderSpotifyEmbed(elements, item);
+
+  if (statusMessage) {
+    renderSpotifyStatus(elements, statusMessage, "positive");
+  }
+}
+
+async function handleSpotifySearch(event) {
+  event.preventDefault();
+
+  const query = elements.spotifyQuery?.value?.trim() || "";
+
+  if (!query) {
+    renderSpotifyStatus(elements, "Type a search before pressing enter.", "warm");
+    return;
+  }
+
+  const directItem = parseSpotifyInput(query);
+
+  if (directItem) {
+    state.lastSpotifyResults = [];
+    renderSpotifyResults(elements, [], () => {}, "Direct Spotify link loaded.");
+    loadSpotifyItem(directItem, "Loaded Spotify link.");
+    return;
+  }
+
+  renderSpotifyStatus(elements, `Searching Spotify for "${query}"...`, "neutral");
+
+  try {
+    const payload = await fetchSpotifySearch(query, 8);
+    const results = Array.isArray(payload?.results) ? payload.results : [];
+    state.lastSpotifyResults = results;
+
+    renderSpotifyResults(elements, results, (item) => {
+      loadSpotifyItem(item, `Loaded ${item.type}: ${item.title}`);
+    });
+
+    if (results.length > 0) {
+      loadSpotifyItem(results[0], `Loaded top result for "${query}".`);
+    } else {
+      renderSpotifyEmbed(elements, null);
+      renderSpotifyStatus(elements, `No Spotify results for "${query}".`, "warm");
+      renderSpotifyResults(elements, [], () => {}, `No results for "${query}".`);
+    }
+  } catch (error) {
+    renderSpotifyStatus(elements, error.message, "warm");
+  }
 }
 
 async function refreshDashboard({ showLoading = false } = {}) {
@@ -167,12 +271,16 @@ function handleThemeChange(event) {
 function bindEvents() {
   elements.cityButtons.forEach((button) => button.addEventListener("click", handleCityChange));
   elements.themeButtons.forEach((button) => button.addEventListener("click", handleThemeChange));
+  elements.spotifySearchForm?.addEventListener("submit", handleSpotifySearch);
 }
 
 function init() {
   applyTheme(state.activeTheme);
   renderControls(elements, state);
   renderLoadingState(elements, state.activeCity);
+  renderSpotifyStatus(elements, "Search for something to play.", "neutral");
+  renderSpotifyResults(elements, [], () => {}, "No search yet.");
+  renderSpotifyEmbed(elements, null);
   updateClock();
   bindEvents();
   refreshDashboard({ showLoading: true });

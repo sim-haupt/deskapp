@@ -107,6 +107,28 @@ function createTickerItem(quote) {
   return item;
 }
 
+function createSpotifyResultItem(item, onSelect) {
+  const listItem = document.createElement("li");
+  listItem.className = "spotify-result-item";
+
+  const button = document.createElement("button");
+  button.className = "spotify-result-button";
+  button.type = "button";
+  button.addEventListener("click", () => onSelect(item));
+
+  const title = document.createElement("strong");
+  title.className = "spotify-result-title";
+  title.textContent = item.title || "Untitled";
+
+  const meta = document.createElement("span");
+  meta.className = "spotify-result-meta";
+  meta.textContent = `${(item.type || "item").toUpperCase()} | ${item.subtitle || "Spotify"}`;
+
+  button.append(title, meta);
+  listItem.append(button);
+  return listItem;
+}
+
 function replaceChildren(target, children) {
   target.replaceChildren(...children);
 }
@@ -199,6 +221,54 @@ export function renderLatestVideo(elements, video) {
   }
 
   elements.latestVideoFrame.title = video.title || "Latest video from DaytradeWarrior";
+}
+
+export function renderSpotifyStatus(elements, message, tone = "neutral") {
+  if (!elements.spotifyStatus) {
+    return;
+  }
+
+  elements.spotifyStatus.textContent = message;
+  elements.spotifyStatus.dataset.tone = tone;
+}
+
+export function renderSpotifyResults(elements, results, onSelect, emptyMessage = "No results found.") {
+  if (!elements.spotifyResults) {
+    return;
+  }
+
+  if (!Array.isArray(results) || results.length === 0) {
+    const empty = document.createElement("li");
+    empty.className = "spotify-result-empty";
+    empty.textContent = emptyMessage;
+    replaceChildren(elements.spotifyResults, [empty]);
+    return;
+  }
+
+  replaceChildren(
+    elements.spotifyResults,
+    results.map((item) => createSpotifyResultItem(item, onSelect))
+  );
+}
+
+export function renderSpotifyEmbed(elements, item) {
+  if (!elements.spotifyPlayerFrame) {
+    return;
+  }
+
+  if (!item?.embedUrl) {
+    elements.spotifyPlayerFrame.removeAttribute("src");
+    elements.spotifyPlayerFrame.title = "Spotify player";
+    return;
+  }
+
+  if (elements.spotifyPlayerFrame.src !== item.embedUrl) {
+    elements.spotifyPlayerFrame.src = item.embedUrl;
+  }
+
+  elements.spotifyPlayerFrame.title = item.title
+    ? `Spotify player for ${item.title}`
+    : "Spotify player";
 }
 
 export function renderRecentDays(elements, lastSevenDays) {

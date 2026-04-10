@@ -149,6 +149,45 @@
               </div>
             </div>
           </article>
+
+          <article class="widget widget-spotify" aria-labelledby="spotify-title">
+            <div class="widget-title-row">
+              <h2 id="spotify-title" class="widget-title">SPOTIFY</h2>
+            </div>
+            <div class="widget-body spotify-widget-body">
+              <form id="spotify-search-form" class="spotify-search-form" novalidate>
+                <label class="sr-only" for="spotify-query">Search Spotify</label>
+                <input
+                  id="spotify-query"
+                  class="spotify-search-input"
+                  name="spotify-query"
+                  type="search"
+                  placeholder="Search track, artist, album or playlist"
+                  autocomplete="off"
+                />
+                <button class="spotify-search-button" type="submit">Search</button>
+              </form>
+
+              <p id="spotify-status" class="spotify-status" role="status">
+                Search for something to play.
+              </p>
+
+              <ul id="spotify-results" class="spotify-results" aria-live="polite">
+                <li class="spotify-result-empty">No search yet.</li>
+              </ul>
+
+              <div class="spotify-embed-wrap">
+                <iframe
+                  id="spotify-player-frame"
+                  class="spotify-player-frame"
+                  src=""
+                  title="Spotify player"
+                  loading="lazy"
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                ></iframe>
+              </div>
+            </div>
+          </article>
         </section>
 
         <footer class="footer-strip">

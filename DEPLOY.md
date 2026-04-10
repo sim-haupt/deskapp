@@ -19,6 +19,8 @@ cp .env.example .env
 
 - `ALPACA_KEY_ID`
 - `ALPACA_SECRET_KEY`
+- `SPOTIFY_CLIENT_ID` for the Spotify search widget
+- `SPOTIFY_CLIENT_SECRET` for the Spotify search widget
 - `FRONTEND_ORIGINS`
 - `EXTERNAL_TIMEOUT_MS` optional, defaults to `12000`
 
@@ -63,6 +65,8 @@ The backend requires:
 ```env
 ALPACA_KEY_ID=your_alpaca_key_id
 ALPACA_SECRET_KEY=your_alpaca_secret_key
+SPOTIFY_CLIENT_ID=your_spotify_client_id
+SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
 FRONTEND_ORIGINS=https://your-app.vercel.app,https://your-preview-domain.vercel.app
 EXTERNAL_TIMEOUT_MS=12000
 ```
@@ -106,6 +110,8 @@ Add these Railway variables:
 
 - `ALPACA_KEY_ID`
 - `ALPACA_SECRET_KEY`
+- `SPOTIFY_CLIENT_ID`
+- `SPOTIFY_CLIENT_SECRET`
 - `FRONTEND_ORIGINS`
 - `EXTERNAL_TIMEOUT_MS` optional
 
@@ -124,3 +130,5 @@ That makes root-level Railway deployments work as a fallback, but the cleaner se
 
 - `GET /health`
 - `GET /api/dashboard?city=langen&priceMin=2&priceMax=20&maxVolume=50000000&limit=8`
+- `GET /api/spotify/search?q=your-query`
+- `GET /api/youtube/latest`
