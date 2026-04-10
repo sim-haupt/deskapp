@@ -229,13 +229,13 @@ button:focus-visible {
     0 0 0 8px var(--line),
     12px 12px 0 var(--shadow);
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto auto 1fr auto;
   gap: 16px;
   padding: 18px;
 }
 
 .top-status,
-.widget,
+.ticker-strip,
 .footer-strip {
   border: 4px solid var(--line);
   box-shadow:
@@ -395,20 +395,15 @@ button:focus-visible {
   color: var(--line);
 }
 
-.dashboard-grid {
+.ticker-strip {
   min-height: 0;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-  overflow: auto;
-  padding-right: 6px;
+  background: transparent;
+  overflow: hidden;
+  padding: 10px 0;
 }
 
-.widget {
+.main-content {
   min-height: 0;
-  background: var(--panel);
-  display: grid;
-  grid-template-rows: auto 1fr;
 }
 
 .widget-title-row {
@@ -500,32 +495,9 @@ button:focus-visible {
   color: var(--orange);
 }
 
-.hero-body {
-  display: grid;
-  align-items: center;
-  background:
-    radial-gradient(circle at center, rgba(255, 127, 209, 0.12), transparent 42%),
-    linear-gradient(180deg, rgba(73, 183, 255, 0.08), transparent 60%),
-    #160f23;
-}
-
-.ticker-banner .widget-body {
-  min-height: 110px;
-  background: transparent;
-  overflow: hidden;
-}
-
-.ticker-banner-body {
-  padding: 10px 0;
-}
-
-.ticker-banner {
-  background: transparent;
-}
-
 .ticker-window {
   overflow: hidden;
-  padding: 0 6px 8px;
+  padding: 0 6px;
 }
 
 .ticker-marquee {
@@ -608,19 +580,19 @@ button:focus-visible {
   height: 52px;
 }
 
-.dashboard-grid::-webkit-scrollbar,
+.main-content::-webkit-scrollbar,
 .widget-body::-webkit-scrollbar {
   width: 12px;
   height: 12px;
 }
 
-.dashboard-grid::-webkit-scrollbar-track,
+.main-content::-webkit-scrollbar-track,
 .widget-body::-webkit-scrollbar-track {
   background: var(--scroll-track);
   border: 3px solid var(--line);
 }
 
-.dashboard-grid::-webkit-scrollbar-thumb,
+.main-content::-webkit-scrollbar-thumb,
 .widget-body::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, var(--blue), var(--purple));
   border: 3px solid var(--line);
@@ -650,9 +622,9 @@ button:focus-visible {
     gap: 12px;
   }
 
-  .dashboard-grid {
+  .ticker-strip {
     overflow: visible;
-    padding-right: 0;
+    padding: 8px 0;
   }
 
   .footer-strip {

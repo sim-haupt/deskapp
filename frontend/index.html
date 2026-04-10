@@ -85,23 +85,22 @@
           </div>
         </header>
 
-        <section class="dashboard-grid" aria-live="polite">
-          <article class="widget ticker-banner" aria-labelledby="ticker-title">
-            <h2 id="ticker-title" class="sr-only">Market ticker</h2>
-            <div class="widget-body hero-body ticker-banner-body">
-              <div class="ticker-window" aria-label="Scrolling market ticker">
-                <div id="ticker-marquee" class="ticker-marquee">
-                  <div id="ticker-track-a" class="ticker-track"></div>
-                  <div id="ticker-track-b" class="ticker-track" aria-hidden="true"></div>
-                </div>
-              </div>
+        <section class="ticker-strip" aria-labelledby="ticker-title" aria-live="polite">
+          <h2 id="ticker-title" class="sr-only">Market ticker</h2>
+          <div class="ticker-window" aria-label="Scrolling market ticker">
+            <div id="ticker-marquee" class="ticker-marquee">
+              <div id="ticker-track-a" class="ticker-track"></div>
+              <div id="ticker-track-b" class="ticker-track" aria-hidden="true"></div>
             </div>
-          </article>
+          </div>
+        </section>
+
+        <section class="main-content" aria-label="Main content">
         </section>
 
         <footer class="footer-strip">
           <p id="data-status" class="footer-item" role="status">Connecting to backend…</p>
-          <p id="feed-label" class="footer-item">Delayed SIP equities and Alpaca crypto</p>
+          <p id="feed-label" class="footer-item">Delayed SIP equities</p>
           <p id="last-updated" class="footer-item">Awaiting first sync</p>
 
           <div class="theme-switcher" role="group" aria-label="Choose theme">

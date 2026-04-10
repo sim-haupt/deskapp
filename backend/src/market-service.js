@@ -1,6 +1,6 @@
 const { URL } = require("node:url");
 const MemoryCache = require("./cache");
-const { cryptoSymbols, sectorSymbols, stockSymbols } = require("./data");
+const { stockSymbols } = require("./data");
 const { env } = require("./env");
 const HttpError = require("./http-error");
 const { fetchJson } = require("./http-client");
@@ -74,16 +74,6 @@ async function fetchStockWithFeedFallback({ endpoint, label, applySpecificParams
   throw lastError;
 }
 
-async function fetchCryptoSnapshots(symbols) {
-  const url = new URL("https://data.alpaca.markets/v1beta3/crypto/us/snapshots");
-  url.searchParams.set("symbols", symbols.join(","));
-
-  return fetchJson(url, {
-    headers: getAlpacaHeaders(),
-    label: "Alpaca crypto snapshots"
-  });
-}
-
 function getStockSnapshot(payload, symbol) {
   return payload?.snapshots?.[symbol] || payload?.[symbol] || null;
 }
@@ -104,40 +94,6 @@ function mapBannerStocks(stockSnapshotPayload) {
   });
 }
 
-function mapBannerSectors(stockSnapshotPayload) {
-  return sectorSymbols
-    .map(({ symbol, label }) => {
-      const snapshot = getStockSnapshot(stockSnapshotPayload, symbol);
-      const price =
-        snapshot?.latestTrade?.p || snapshot?.minuteBar?.c || snapshot?.dailyBar?.c || snapshot?.prevDailyBar?.c || 0;
-      const previousClose = snapshot?.prevDailyBar?.c || snapshot?.dailyBar?.o || price;
-
-      return {
-        symbol,
-        label,
-        price,
-        pct: previousClose ? ((price - previousClose) / previousClose) * 100 : 0
-      };
-    })
-    .sort((left, right) => right.pct - left.pct)
-    .slice(0, 3);
-}
-
-function mapBannerCrypto(payload) {
-  return cryptoSymbols.map(({ symbol, label }) => {
-    const snapshot = payload?.snapshots?.[symbol] || payload?.[symbol] || null;
-    const price = snapshot?.latestTrade?.p || snapshot?.dailyBar?.c || 0;
-    const previousClose = snapshot?.prevDailyBar?.c || snapshot?.dailyBar?.o || price;
-
-    return {
-      symbol,
-      label,
-      price,
-      pct: previousClose ? ((price - previousClose) / previousClose) * 100 : 0
-    };
-  });
-}
-
 async function getBannerData() {
   const cached = bannerCache.get("market-banner");
 
@@ -146,20 +102,17 @@ async function getBannerData() {
   }
 
   try {
-    const symbols = [...stockSymbols, ...sectorSymbols].map((item) => item.symbol);
+    const symbols = stockSymbols.map((item) => item.symbol);
 
-    const [stockSnapshots, cryptoPayload] = await Promise.all([
-      fetchStockSnapshots(symbols),
-      fetchCryptoSnapshots(cryptoSymbols.map((item) => item.symbol))
-    ]);
+    const stockSnapshots = await fetchStockSnapshots(symbols);
 
     return bannerCache.set(
       "market-banner",
       {
         asOf: new Date().toISOString(),
-        feedLabel: "DELAYED SIP EQUITIES / ALPACA CRYPTO",
-        quotes: [...mapBannerStocks(stockSnapshots), ...mapBannerCrypto(cryptoPayload)],
-        sectors: mapBannerSectors(stockSnapshots)
+        feedLabel: "DELAYED SIP EQUITIES",
+        quotes: mapBannerStocks(stockSnapshots),
+        sectors: []
       },
       60 * 1000
     );

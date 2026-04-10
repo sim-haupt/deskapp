@@ -15,24 +15,9 @@ const cities = {
 
 const stockSymbols = [
   { symbol: "SPY", label: "SPY" },
-  { symbol: "QQQ", label: "QQQ" },
-  { symbol: "IWM", label: "IWM" },
-  { symbol: "DIA", label: "DIA" },
-  { symbol: "GLD", label: "GLD" },
-  { symbol: "TLT", label: "TLT" }
-];
-
-const cryptoSymbols = [{ symbol: "BTC/USD", label: "BTC" }];
-
-const sectorSymbols = [
-  { symbol: "XLK", label: "Technology" },
-  { symbol: "XLF", label: "Financials" },
-  { symbol: "XLE", label: "Energy" },
-  { symbol: "XLV", label: "Health Care" },
-  { symbol: "XLI", label: "Industrials" },
-  { symbol: "XLY", label: "Consumer Discretionary" },
-  { symbol: "XLP", label: "Consumer Staples" },
-  { symbol: "XLU", label: "Utilities" }
+  { symbol: "IWM", label: "RUSSELL 2000" },
+  { symbol: "QQQ", label: "NASDAQ" },
+  { symbol: "DIA", label: "DOW" }
 ];
 
 const weatherCodes = {
@@ -68,8 +53,6 @@ const weatherCodes = {
 
 module.exports = {
   cities,
-  cryptoSymbols,
-  sectorSymbols,
   stockSymbols,
   weatherCodes
 };
