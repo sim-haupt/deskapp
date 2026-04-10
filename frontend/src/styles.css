@@ -235,6 +235,7 @@ button:focus-visible {
 }
 
 .top-status,
+.widget,
 .ticker-strip,
 .footer-strip {
   border: 4px solid var(--line);
@@ -404,6 +405,18 @@ button:focus-visible {
 
 .main-content {
   min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  overflow: auto;
+  padding-right: 6px;
+}
+
+.widget {
+  min-height: 0;
+  background: var(--panel);
+  display: grid;
+  grid-template-rows: auto 1fr;
 }
 
 .widget-title-row {
@@ -625,6 +638,11 @@ button:focus-visible {
   .ticker-strip {
     overflow: visible;
     padding: 8px 0;
+  }
+
+  .main-content {
+    overflow: visible;
+    padding-right: 0;
   }
 
   .footer-strip {

@@ -20,6 +20,33 @@ function getTickerTone(value) {
   return "is-flat";
 }
 
+function getMetricTone(value) {
+  if (value > 0) {
+    return "positive";
+  }
+
+  if (value < 0) {
+    return "warm";
+  }
+
+  return "neutral";
+}
+
+function createMetricRow(label, value, tone = "neutral") {
+  const item = document.createElement("li");
+  item.className = "metric-row";
+
+  const labelNode = document.createElement("span");
+  labelNode.textContent = label;
+
+  const valueNode = document.createElement("strong");
+  valueNode.className = tone;
+  valueNode.textContent = value;
+
+  item.append(labelNode, valueNode);
+  return item;
+}
+
 function createTickerItem(quote) {
   const item = document.createElement("span");
   item.className = `ticker-item ${getTickerTone(quote.pct)}`;
@@ -91,6 +118,18 @@ export function renderTicker(elements, quotes) {
   replaceChildren(elements.tickerTrackB, quotes.map(createTickerItem));
 }
 
+export function renderSectors(elements, sectors) {
+  if (!Array.isArray(sectors) || sectors.length === 0) {
+    replaceChildren(elements.sectorList, [createMetricRow("No sector data", "--")]);
+    return;
+  }
+
+  replaceChildren(
+    elements.sectorList,
+    sectors.map((sector) => createMetricRow(sector.label, formatPercent(sector.pct), getMetricTone(sector.pct)))
+  );
+}
+
 export function renderFooter(elements, payload) {
   elements.dataStatus.textContent = "Backend online";
   elements.feedLabel.textContent = payload.market.feedLabel;
@@ -114,6 +153,7 @@ export function renderRefreshError(elements, message, hasExistingData) {
 
   if (!hasExistingData) {
     elements.feedLabel.textContent = "Backend unavailable";
+    replaceChildren(elements.sectorList, [createMetricRow("Backend unavailable", "--")]);
     renderTicker(elements, []);
   }
 }

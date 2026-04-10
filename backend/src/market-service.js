@@ -1,6 +1,6 @@
 const { URL } = require("node:url");
 const MemoryCache = require("./cache");
-const { stockSymbols } = require("./data");
+const { sectorSymbols, stockSymbols } = require("./data");
 const { env } = require("./env");
 const HttpError = require("./http-error");
 const { fetchJson } = require("./http-client");
@@ -94,6 +94,24 @@ function mapBannerStocks(stockSnapshotPayload) {
   });
 }
 
+function mapBannerSectors(stockSnapshotPayload) {
+  return sectorSymbols
+    .map(({ symbol, label }) => {
+      const snapshot = getStockSnapshot(stockSnapshotPayload, symbol);
+      const price =
+        snapshot?.latestTrade?.p || snapshot?.minuteBar?.c || snapshot?.dailyBar?.c || snapshot?.prevDailyBar?.c || 0;
+      const previousClose = snapshot?.prevDailyBar?.c || snapshot?.dailyBar?.o || price;
+
+      return {
+        symbol,
+        label,
+        price,
+        pct: previousClose ? ((price - previousClose) / previousClose) * 100 : 0
+      };
+    })
+    .sort((left, right) => right.pct - left.pct);
+}
+
 async function getBannerData() {
   const cached = bannerCache.get("market-banner");
 
@@ -102,7 +120,7 @@ async function getBannerData() {
   }
 
   try {
-    const symbols = stockSymbols.map((item) => item.symbol);
+    const symbols = [...stockSymbols, ...sectorSymbols].map((item) => item.symbol);
 
     const stockSnapshots = await fetchStockSnapshots(symbols);
 
@@ -112,7 +130,7 @@ async function getBannerData() {
         asOf: new Date().toISOString(),
         feedLabel: "DELAYED SIP EQUITIES",
         quotes: mapBannerStocks(stockSnapshots),
-        sectors: []
+        sectors: mapBannerSectors(stockSnapshots)
       },
       60 * 1000
     );

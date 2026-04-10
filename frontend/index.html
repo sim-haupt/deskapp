@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Pixel Desk is a retro market board with weather, live clocks, and a market ticker loop."
+      content="Pixel Desk is a retro market board with weather, live clocks, a market ticker loop, and sector performance."
     />
     <title>Pixel Desk</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -96,6 +96,19 @@
         </section>
 
         <section class="main-content" aria-label="Main content">
+          <article class="widget" aria-labelledby="sector-title">
+            <div class="widget-title-row">
+              <h2 id="sector-title" class="widget-title">SECTOR PERFORMANCE</h2>
+            </div>
+            <div class="widget-body">
+              <ul id="sector-list" class="metric-list" aria-live="polite">
+                <li class="metric-row">
+                  <span>Loading</span>
+                  <strong class="neutral">--</strong>
+                </li>
+              </ul>
+            </div>
+          </article>
         </section>
 
         <footer class="footer-strip">

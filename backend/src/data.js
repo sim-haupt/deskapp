@@ -29,6 +29,19 @@ const stockSymbols = [
   { symbol: "GOOGL", label: "GOOGL" }
 ];
 
+const sectorSymbols = [
+  { symbol: "XLK", label: "TECHNOLOGY" },
+  { symbol: "XLF", label: "FINANCIALS" },
+  { symbol: "XLE", label: "ENERGY" },
+  { symbol: "XLV", label: "HEALTH CARE" },
+  { symbol: "XLI", label: "INDUSTRIALS" },
+  { symbol: "XLY", label: "CONSUMER DISC." },
+  { symbol: "XLP", label: "CONSUMER STAPLES" },
+  { symbol: "XLU", label: "UTILITIES" },
+  { symbol: "XLB", label: "MATERIALS" },
+  { symbol: "XLRE", label: "REAL ESTATE" }
+];
+
 const weatherCodes = {
   0: "CLEAR SKY",
   1: "MOSTLY CLEAR",
@@ -62,6 +75,7 @@ const weatherCodes = {
 
 module.exports = {
   cities,
+  sectorSymbols,
   stockSymbols,
   weatherCodes
 };
