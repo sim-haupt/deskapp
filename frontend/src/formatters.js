@@ -24,6 +24,18 @@ export function formatClock(date, timeZone) {
 
 export function formatCountdown(totalMinutes) {
   const safeMinutes = Math.max(0, Math.floor(totalMinutes));
+  const days = Math.floor(safeMinutes / (24 * 60));
+  const remainingMinutes = safeMinutes % (24 * 60);
+  const remainingHours = Math.floor(remainingMinutes / 60);
+  const remainingClockMinutes = remainingMinutes % 60;
+
+  if (days > 0) {
+    const dayLabel = days === 1 ? "day" : "days";
+    const hourLabel = remainingHours === 1 ? "hour" : "hours";
+
+    return `${days} ${dayLabel} ${remainingHours} ${hourLabel}`;
+  }
+
   const hours = Math.floor(safeMinutes / 60);
   const minutes = safeMinutes % 60;
 
