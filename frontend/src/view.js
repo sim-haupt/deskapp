@@ -234,6 +234,16 @@ export function renderSpotifyMode(elements, mode) {
   body.classList.toggle("is-playing", mode === "playing");
 }
 
+export function renderSpotifySearchState(elements, hasSearch) {
+  const body = elements.spotifyWidgetBody;
+
+  if (!body) {
+    return;
+  }
+
+  body.classList.toggle("has-search", Boolean(hasSearch));
+}
+
 export function renderSpotifyResults(elements, results, onSelect, emptyMessage = "") {
   if (!elements.spotifyResults) {
     return;

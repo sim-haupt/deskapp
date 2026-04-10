@@ -18,6 +18,7 @@ import {
   renderSpotifyEmbed,
   renderSpotifyMode,
   renderSpotifyResults,
+  renderSpotifySearchState,
   renderTradeSummary,
   renderTradeSummaryUnavailable,
   renderTicker,
@@ -166,12 +167,14 @@ function loadSpotifyItem(item) {
 async function searchSpotify(query) {
   if (!query) {
     state.lastSpotifyResults = [];
+    renderSpotifySearchState(elements, false);
     renderSpotifyResults(elements, [], () => {});
     renderSpotifyEmbed(elements, null);
     renderSpotifyMode(elements, "searching");
     return;
   }
 
+  renderSpotifySearchState(elements, true);
   const directItem = parseSpotifyInput(query);
 
   if (directItem) {
@@ -207,8 +210,8 @@ async function searchSpotify(query) {
     if (requestId !== state.spotifySearchRequestId) {
       return;
     }
-    renderSpotifyMode(elements, "searching");
-    renderSpotifyResults(elements, [], () => {});
+  renderSpotifyMode(elements, "searching");
+  renderSpotifyResults(elements, [], () => {});
   }
 }
 
@@ -344,6 +347,7 @@ function init() {
   renderControls(elements, state);
   renderSpotifyFilters();
   renderLoadingState(elements, state.activeCity);
+  renderSpotifySearchState(elements, false);
   renderSpotifyMode(elements, "searching");
   renderSpotifyResults(elements, [], () => {});
   renderSpotifyEmbed(elements, null);
