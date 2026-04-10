@@ -66,18 +66,26 @@
           </div>
 
           <div class="status-row status-row-sub">
-            <div class="time-strip">
-              <p id="time-cet" class="status-clock">--:--:--</p>
-              <span class="live-pill">CET</span>
-              <p id="time-ny" class="status-clock secondary">--:--:--</p>
-              <span class="live-pill alt">NY</span>
+            <div class="time-session-row">
+              <div class="time-strip">
+                <p id="time-cet" class="status-clock">--:--:--</p>
+                <span class="live-pill">CET</span>
+                <p id="time-ny" class="status-clock secondary">--:--:--</p>
+                <span class="live-pill alt">NY</span>
+              </div>
+
+              <div class="session-strip" aria-live="polite">
+                <p id="header-session-phase" class="session-phase">Checking session</p>
+                <p id="header-session-countdown" class="session-countdown">Next phase in --:--</p>
+              </div>
             </div>
 
-            <div class="session-strip" aria-live="polite">
-              <p id="header-session-phase" class="session-phase">Checking session</p>
-              <p id="header-session-countdown" class="session-countdown">Next phase in --:--</p>
+            <div class="trade-summary-strip" aria-live="polite">
+              <p class="trade-summary-item"><span>TOTAL</span><strong id="header-total">--</strong></p>
+              <p class="trade-summary-item"><span>MONTH</span><strong id="header-month">--</strong></p>
+              <p class="trade-summary-item"><span>WEEK</span><strong id="header-week">--</strong></p>
+              <p class="trade-summary-item"><span>TODAY</span><strong id="header-today">--</strong></p>
             </div>
-
           </div>
         </header>
 
@@ -101,6 +109,22 @@
                 <li class="metric-row">
                   <span>Loading</span>
                   <strong class="neutral">--</strong>
+                </li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="widget widget-secondary" aria-labelledby="recent-trading-title">
+            <div class="widget-title-row">
+              <h2 id="recent-trading-title" class="widget-title">LAST 3 DAYS</h2>
+            </div>
+            <div class="widget-body">
+              <ul id="recent-days-list" class="recent-days-list" aria-live="polite">
+                <li class="recent-day-row">
+                  <span class="recent-day-label">--</span>
+                  <span class="recent-day-weekday">--</span>
+                  <strong class="recent-day-pnl neutral">--</strong>
+                  <span class="recent-day-trades">--</span>
                 </li>
               </ul>
             </div>

@@ -8,6 +8,11 @@ import {
   formatUpdateTime
 } from "./formatters.js";
 
+const moneyFormatter = new Intl.NumberFormat("en-US", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+});
+
 function getTickerTone(value) {
   if (value > 0) {
     return "is-up";
@@ -32,6 +37,16 @@ function getMetricTone(value) {
   return "neutral";
 }
 
+function formatMoney(value) {
+  const amount = Number(value);
+
+  if (!Number.isFinite(amount)) {
+    return "--";
+  }
+
+  return `${amount >= 0 ? "+" : "-"}${moneyFormatter.format(Math.abs(amount))}`;
+}
+
 function createMetricRow(label, value, tone = "neutral") {
   const item = document.createElement("li");
   item.className = "metric-row";
@@ -44,6 +59,31 @@ function createMetricRow(label, value, tone = "neutral") {
   valueNode.textContent = value;
 
   item.append(labelNode, valueNode);
+  return item;
+}
+
+function createRecentDayRow(day) {
+  const item = document.createElement("li");
+  item.className = "recent-day-row";
+
+  const label = document.createElement("span");
+  label.className = "recent-day-label";
+  label.textContent = day?.label || "--";
+
+  const weekday = document.createElement("span");
+  weekday.className = "recent-day-weekday";
+  weekday.textContent = day?.weekday || "--";
+
+  const pnl = Number(day?.pnl);
+  const pnlNode = document.createElement("strong");
+  pnlNode.className = `recent-day-pnl ${getMetricTone(pnl)}`;
+  pnlNode.textContent = formatMoney(pnl);
+
+  const trades = document.createElement("span");
+  trades.className = "recent-day-trades";
+  trades.textContent = `${Number.isFinite(Number(day?.trades)) ? Number(day.trades) : "--"} TRD`;
+
+  item.append(label, weekday, pnlNode, trades);
   return item;
 }
 
@@ -136,6 +176,31 @@ export function renderFooter(elements, payload) {
   elements.lastUpdated.textContent = `Updated ${formatUpdateTime(payload.meta.asOf)}`;
 }
 
+export function renderTradeSummary(elements, summary) {
+  elements.headerTotal.textContent = formatMoney(summary?.cumulative?.total);
+  elements.headerMonth.textContent = formatMoney(summary?.cumulative?.month);
+  elements.headerWeek.textContent = formatMoney(summary?.cumulative?.week);
+  elements.headerToday.textContent = formatMoney(summary?.cumulative?.today);
+}
+
+export function renderRecentDays(elements, lastSevenDays) {
+  if (!Array.isArray(lastSevenDays) || lastSevenDays.length === 0) {
+    replaceChildren(elements.recentDaysList, [createRecentDayRow(null)]);
+    return;
+  }
+
+  const recentDays = lastSevenDays.slice(-3).reverse();
+  replaceChildren(elements.recentDaysList, recentDays.map(createRecentDayRow));
+}
+
+export function renderTradeSummaryUnavailable(elements) {
+  elements.headerTotal.textContent = "--";
+  elements.headerMonth.textContent = "--";
+  elements.headerWeek.textContent = "--";
+  elements.headerToday.textContent = "--";
+  replaceChildren(elements.recentDaysList, [createRecentDayRow(null)]);
+}
+
 export function renderLoadingState(elements, activeCity) {
   elements.dataStatus.textContent = "Loading dashboard data…";
   elements.feedLabel.textContent = "Waiting for backend response";
@@ -143,6 +208,7 @@ export function renderLoadingState(elements, activeCity) {
   elements.weatherCityLabel.textContent = cities[activeCity]?.label || "Selected city";
   elements.weatherTempInline.textContent = "--°C";
   elements.weatherStatusInline.textContent = "Syncing weather…";
+  renderTradeSummaryUnavailable(elements);
 }
 
 export function renderRefreshError(elements, message, hasExistingData) {
@@ -155,5 +221,6 @@ export function renderRefreshError(elements, message, hasExistingData) {
     elements.feedLabel.textContent = "Backend unavailable";
     replaceChildren(elements.sectorList, [createMetricRow("Backend unavailable", "--")]);
     renderTicker(elements, []);
+    renderTradeSummaryUnavailable(elements);
   }
 }

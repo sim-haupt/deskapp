@@ -1,5 +1,7 @@
 const REQUEST_TIMEOUT_MS = 12000;
 const DEFAULT_API_BASE_URL = "http://localhost:3000";
+const TRADE_SUMMARY_URL =
+  "https://trader-sand.vercel.app/api/public/trades/widget-summary/cmnofsul30000lc0plliibaiz";
 
 function getApiBaseUrl() {
   const runtimeConfig = window.__PIXEL_DESK_CONFIG__ ?? {};
@@ -41,4 +43,26 @@ export async function fetchDashboard(params) {
   }
 
   return response.json();
+}
+
+export async function fetchTradeSummary() {
+  const response = await fetch(TRADE_SUMMARY_URL, {
+    method: "GET",
+    headers: {
+      Accept: "application/json"
+    },
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+  });
+
+  if (!response.ok) {
+    throw new Error(`Trade summary request failed with status ${response.status}.`);
+  }
+
+  const payload = await response.json();
+
+  if (!payload?.success || !payload?.data) {
+    throw new Error("Trade summary response is invalid.");
+  }
+
+  return payload.data;
 }

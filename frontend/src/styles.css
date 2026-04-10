@@ -305,6 +305,14 @@ button:focus-visible {
   flex-wrap: wrap;
 }
 
+.time-session-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
 .status-clock {
   font-size: clamp(0.72rem, 1.05vw, 1.25rem);
   line-height: 1.25;
@@ -334,6 +342,31 @@ button:focus-visible {
   text-align: left;
   opacity: 0.82;
   white-space: nowrap;
+}
+
+.trade-summary-strip {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+.trade-summary-item {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.4rem;
+  line-height: 1.2;
+  color: rgba(248, 242, 223, 0.82);
+}
+
+.trade-summary-item strong {
+  margin: 0;
+  color: var(--green);
+  font-size: 0.44rem;
 }
 
 .session-phase {
@@ -410,6 +443,11 @@ button:focus-visible {
   grid-row: span 3;
 }
 
+.widget-secondary {
+  grid-column: span 3;
+  grid-row: span 3;
+}
+
 .widget {
   min-height: 0;
   background: var(--panel);
@@ -471,6 +509,14 @@ button:focus-visible {
   align-content: start;
 }
 
+.recent-days-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  align-content: start;
+}
+
 .metric-row {
   display: flex;
   justify-content: space-between;
@@ -491,6 +537,40 @@ button:focus-visible {
 }
 
 .metric-row strong {
+  text-align: right;
+}
+
+.recent-day-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 4px solid rgba(73, 183, 255, 0.22);
+  font-size: clamp(0.46rem, 0.62vw, 0.66rem);
+  line-height: 1.35;
+}
+
+.recent-day-row:last-child {
+  border-bottom: 0;
+}
+
+.recent-day-label,
+.recent-day-weekday,
+.recent-day-trades {
+  text-transform: uppercase;
+}
+
+.recent-day-weekday {
+  color: rgba(248, 242, 223, 0.78);
+}
+
+.recent-day-pnl {
+  text-align: right;
+}
+
+.recent-day-trades {
+  color: var(--blue);
   text-align: right;
 }
 
@@ -650,6 +730,11 @@ button:focus-visible {
     grid-row: span 1;
   }
 
+  .widget-secondary {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+
   .status-row {
     flex-wrap: wrap;
     align-items: center;
@@ -671,11 +756,11 @@ button:focus-visible {
     margin-left: auto;
   }
 
-  .status-row-sub .time-strip {
+  .status-row-sub .time-session-row {
     flex: 1 1 auto;
   }
 
-  .status-row-sub .session-strip {
+  .status-row-sub .trade-summary-strip {
     margin-left: auto;
   }
 
@@ -725,21 +810,42 @@ button:focus-visible {
     grid-row: span 1;
   }
 
+  .widget-secondary {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+
   .status-row-main .city-switcher-top {
     width: 100%;
     justify-content: flex-end;
     margin-left: 0;
   }
 
-  .status-row-sub .time-strip {
+  .status-row-sub .time-session-row {
     flex: 1 1 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
   }
 
   .status-row-sub .session-strip {
     margin-left: 0;
-    flex: 1 1 100%;
     justify-content: flex-start;
     white-space: normal;
+  }
+
+  .status-row-sub .trade-summary-strip {
+    margin-left: 0;
+    flex: 1 1 100%;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .trade-summary-item {
+    font-size: 0.38rem;
+  }
+
+  .trade-summary-item strong {
+    font-size: 0.42rem;
   }
 
   .status-large,

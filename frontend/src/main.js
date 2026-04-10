@@ -1,13 +1,16 @@
 import { cities } from "./app-data.js";
-import { fetchDashboard } from "./api.js";
+import { fetchDashboard, fetchTradeSummary } from "./api.js";
 import {
   renderClock,
   renderControls,
   renderFooter,
   renderLoadingState,
+  renderRecentDays,
   renderRefreshError,
   renderSectors,
   renderSession,
+  renderTradeSummary,
+  renderTradeSummaryUnavailable,
   renderTicker,
   renderWeather
 } from "./view.js";
@@ -29,9 +32,14 @@ const elements = {
   weatherStatusInline: document.querySelector("#weather-status-inline"),
   headerSessionPhase: document.querySelector("#header-session-phase"),
   headerSessionCountdown: document.querySelector("#header-session-countdown"),
+  headerTotal: document.querySelector("#header-total"),
+  headerMonth: document.querySelector("#header-month"),
+  headerWeek: document.querySelector("#header-week"),
+  headerToday: document.querySelector("#header-today"),
   tickerTrackA: document.querySelector("#ticker-track-a"),
   tickerTrackB: document.querySelector("#ticker-track-b"),
   sectorList: document.querySelector("#sector-list"),
+  recentDaysList: document.querySelector("#recent-days-list"),
   dataStatus: document.querySelector("#data-status"),
   feedLabel: document.querySelector("#feed-label"),
   lastUpdated: document.querySelector("#last-updated"),
@@ -43,6 +51,7 @@ const state = {
   activeCity: DEFAULT_CITY,
   activeTheme: loadStoredTheme(),
   lastPayload: null,
+  lastTradeSummary: null,
   refreshInFlight: false
 };
 
@@ -97,6 +106,20 @@ async function refreshDashboard({ showLoading = false } = {}) {
     renderTicker(elements, dashboardPayload.market.quotes);
     renderSectors(elements, dashboardPayload.market.sectors);
     renderFooter(elements, dashboardPayload);
+
+    try {
+      const tradeSummary = await fetchTradeSummary();
+      state.lastTradeSummary = tradeSummary;
+      renderTradeSummary(elements, tradeSummary);
+      renderRecentDays(elements, tradeSummary.lastSevenDays);
+    } catch {
+      if (state.lastTradeSummary) {
+        renderTradeSummary(elements, state.lastTradeSummary);
+        renderRecentDays(elements, state.lastTradeSummary.lastSevenDays);
+      } else {
+        renderTradeSummaryUnavailable(elements);
+      }
+    }
   } catch (error) {
     renderRefreshError(elements, error.message, Boolean(state.lastPayload));
   } finally {
