@@ -137,8 +137,10 @@ body[data-theme="mint"] {
 html,
 body {
   margin: 0;
-  min-height: 100%;
+  width: 100%;
+  height: 100%;
   overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 body {
@@ -210,24 +212,22 @@ button:focus-visible {
 
 .app-shell {
   width: 100%;
-  min-height: 100vh;
-  min-height: 100dvh;
-  height: auto;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
   display: grid;
   align-items: stretch;
   justify-items: center;
   padding: 3rem;
   box-sizing: border-box;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .desktop-frame {
   width: min(100%, 1980px);
   min-width: 0;
-  min-height: calc(100vh - 6rem);
-  min-height: calc(100dvh - 6rem);
-  height: auto;
+  min-height: 0;
+  height: 100%;
   max-height: none;
   background:
     linear-gradient(180deg, var(--panel-highlight), transparent 30%),
@@ -890,10 +890,9 @@ button:focus-visible {
   }
 
   .desktop-frame {
-    min-height: calc(100vh - 4rem);
-    min-height: calc(100dvh - 4rem);
+    min-height: 0;
     max-height: none;
-    height: auto;
+    height: 100%;
     padding: 10px;
     gap: 10px;
   }
@@ -906,7 +905,7 @@ button:focus-visible {
   .main-content {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: auto;
-    overflow: visible;
+    overflow: auto;
     padding-right: 0;
   }
 
@@ -981,9 +980,8 @@ button:focus-visible {
   }
 
   .desktop-frame {
-    min-height: calc(100vh - 3rem);
-    min-height: calc(100dvh - 3rem);
-    height: auto;
+    min-height: 0;
+    height: 100%;
     grid-template-rows: auto auto 1fr auto;
     align-content: stretch;
     padding: 10px;
@@ -1036,7 +1034,7 @@ button:focus-visible {
     align-items: start;
     align-content: start;
     gap: 10px;
-    overflow: visible;
+    overflow: auto;
     padding-right: 0;
   }
 
@@ -1079,8 +1077,7 @@ button:focus-visible {
 
   .desktop-frame {
     width: 100%;
-    min-height: calc(100vh - 2rem);
-    min-height: calc(100dvh - 2rem);
+    min-height: 0;
     grid-template-rows: auto auto 1fr auto;
     padding: 9px;
     gap: 9px;
@@ -1166,9 +1163,8 @@ button:focus-visible {
   }
 
   .desktop-frame {
-    min-height: calc(100vh - 2rem);
-    min-height: calc(100dvh - 2rem);
-    height: auto;
+    min-height: 0;
+    height: 100%;
     padding: 8px;
     gap: 8px;
   }
