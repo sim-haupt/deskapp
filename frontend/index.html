@@ -17,151 +17,169 @@
     <link rel="stylesheet" href="./src/styles.css" />
   </head>
   <body>
-    <main class="app-shell layout-shell">
-      <section class="desktop-frame layout-frame" aria-labelledby="app-title">
-        <header class="top-bar surface surface--panel">
-          <div class="brand-block">
-            <p class="eyebrow text-eyebrow">RETRO MARKET BOARD</p>
-            <h1 id="app-title" class="heading-display">Pixel Desk</h1>
-            <p class="hero-copy text-body-muted">
-              Weather, market session timing, delayed Alpaca quotes, and a lightweight screened universe.
-            </p>
+    <main class="app-shell">
+      <section class="desktop-frame" aria-labelledby="app-title">
+        <h1 id="app-title" class="sr-only">Pixel Desk</h1>
+
+        <header class="top-status">
+          <div class="status-row status-row-main">
+            <div class="status-date">
+              <p id="current-date" class="status-large">Loading...</p>
+            </div>
+
+            <div class="status-weather">
+              <img
+                id="weather-icon"
+                class="weather-icon weather-icon-bar"
+                src="./assets/weather/weather-sunny.svg"
+                alt="Current weather icon"
+                width="52"
+                height="52"
+              />
+              <p class="status-large">
+                <span id="weather-temp-inline">--°C</span>
+                <span class="divider">|</span>
+                <span id="weather-status-inline">SYNCING</span>
+                <span class="divider">|</span>
+                <span id="weather-city-label">LANGEN</span>
+              </p>
+            </div>
+
+            <div class="status-actions" aria-hidden="true">
+              <span></span>
+              <span></span>
+            </div>
           </div>
 
-          <div class="status-grid layout-grid layout-grid--status" aria-label="Current dashboard status">
-            <section class="status-card surface surface--inset">
-              <h2 class="card-label text-meta">Berlin Date</h2>
-              <p id="current-date" class="status-large">Loading...</p>
-              <div class="clock-pair cluster cluster--clock">
-                <div>
-                  <p class="clock-label text-meta">Berlin</p>
-                  <p id="time-cet" class="status-clock">--:--:--</p>
-                </div>
-                <div>
-                  <p class="clock-label text-meta">New York</p>
-                  <p id="time-ny" class="status-clock secondary">--:--:--</p>
-                </div>
-              </div>
-            </section>
+          <div class="status-row status-row-sub">
+            <div class="time-strip">
+              <p id="time-cet" class="status-clock">--:--:--</p>
+              <span class="live-pill">CET</span>
+              <p id="time-ny" class="status-clock secondary">--:--:--</p>
+              <span class="live-pill alt">NY</span>
+            </div>
 
-            <section class="status-card surface surface--inset">
-              <h2 class="card-label text-meta">Selected City</h2>
-              <div class="weather-stack layout-weather">
-                <img
-                  id="weather-icon"
-                  class="weather-icon"
-                  src="./assets/weather/weather-sunny.svg"
-                  alt="Current weather icon"
-                  width="72"
-                  height="72"
-                />
-                <div>
-                  <p id="weather-city-label" class="status-large">Langen</p>
-                  <p id="weather-temp-inline" class="weather-reading">--°C</p>
-                  <p id="weather-status-inline" class="weather-copy text-body-muted">Syncing weather…</p>
-                </div>
-              </div>
-            </section>
-
-            <section class="status-card surface surface--inset">
-              <h2 class="card-label text-meta">Session Timer</h2>
+            <div class="session-strip" aria-live="polite">
               <p id="header-session-phase" class="session-phase">Checking session</p>
               <p id="header-session-countdown" class="session-countdown">Next phase in --:--</p>
-              <p class="status-note text-meta">Based on America/New_York market hours.</p>
-            </section>
-          </div>
-        </header>
+            </div>
 
-        <section class="controls-row surface surface--panel" aria-label="Dashboard controls">
-          <div class="control-group">
-            <p class="control-label text-meta">City</p>
-            <div class="button-row cluster cluster--controls" role="group" aria-label="Choose city">
-              <button class="control-button button button--control button--city city-button is-active" data-city="langen" aria-pressed="true" type="button">
+            <div class="city-switcher" role="group" aria-label="Choose city">
+              <button
+                class="city-button is-active"
+                data-city="langen"
+                aria-pressed="true"
+                type="button"
+              >
                 Langen
               </button>
-              <button class="control-button button button--control button--city city-button" data-city="heidelberg" aria-pressed="false" type="button">
+              <button
+                class="city-button"
+                data-city="heidelberg"
+                aria-pressed="false"
+                type="button"
+              >
                 Heidelberg
               </button>
             </div>
           </div>
+        </header>
 
-          <div class="control-group">
-            <p class="control-label text-meta">Theme</p>
-            <div class="button-row cluster cluster--controls" role="group" aria-label="Choose theme">
-              <button class="control-button button button--control button--theme theme-button is-active" data-theme="arcade" aria-pressed="true" type="button">
-                Arcade
-              </button>
-              <button class="control-button button button--control button--theme theme-button" data-theme="dark" aria-pressed="false" type="button">
-                Dark
-              </button>
-              <button class="control-button button button--control button--theme theme-button" data-theme="sunset" aria-pressed="false" type="button">
-                Sunset
-              </button>
-              <button class="control-button button button--control button--theme theme-button" data-theme="mint" aria-pressed="false" type="button">
-                Mint
-              </button>
-              <button class="control-button button button--control button--theme theme-button" data-theme="light" aria-pressed="false" type="button">
-                Light
-              </button>
-            </div>
+        <section class="dashboard-grid" aria-live="polite">
+          <div class="column-left">
+            <article class="widget" aria-labelledby="sector-title">
+              <div class="widget-title-row">
+                <div class="widget-heading-group">
+                  <h2 id="sector-title" class="widget-title">Trending Sectors</h2>
+                  <p class="widget-subtitle">Top performers in the current delayed snapshot.</p>
+                </div>
+              </div>
+              <div class="widget-body">
+                <ul id="sector-list" class="metric-list" aria-live="polite">
+                  <li class="metric-row">
+                    <span>Loading</span>
+                    <strong class="neutral">--</strong>
+                  </li>
+                </ul>
+              </div>
+            </article>
+          </div>
+
+          <div class="column-center">
+            <article class="widget hero-widget" aria-labelledby="ticker-title">
+              <div class="widget-title-row">
+                <div class="widget-heading-group">
+                  <h2 id="ticker-title" class="widget-title">Market Ticker</h2>
+                  <p class="widget-subtitle">
+                    Delayed equities and crypto overview from the Railway API.
+                  </p>
+                </div>
+                <p id="ticker-phase-note" class="phase-note">Waiting for market data…</p>
+              </div>
+              <div class="widget-body hero-body">
+                <div class="ticker-window" aria-label="Scrolling market ticker">
+                  <div id="ticker-marquee" class="ticker-marquee">
+                    <div id="ticker-track-a" class="ticker-track"></div>
+                    <div id="ticker-track-b" class="ticker-track" aria-hidden="true"></div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="column-right">
+            <article class="widget" aria-labelledby="universe-title">
+              <div class="widget-title-row">
+                <div class="widget-heading-group">
+                  <h2 id="universe-title" class="widget-title">Screened Universe</h2>
+                  <p id="universe-summary" class="widget-subtitle">
+                    Price $2-$20 / volume under 50M
+                  </p>
+                </div>
+              </div>
+              <div class="widget-body">
+                <ul id="universe-list" class="metric-list" aria-live="polite">
+                  <li class="metric-row">
+                    <span>Loading</span>
+                    <strong class="neutral">--</strong>
+                  </li>
+                </ul>
+              </div>
+            </article>
           </div>
         </section>
 
-        <section class="dashboard-grid layout-grid layout-grid--dashboard" aria-live="polite">
-          <article class="widget surface surface--panel widget-wide" aria-labelledby="ticker-title">
-            <div class="widget-title-row surface surface--header">
-              <div>
-                <h2 id="ticker-title" class="widget-title heading-section">Market Ticker</h2>
-                <p class="widget-subtitle text-meta">Delayed equities and crypto overview from the Railway API.</p>
-              </div>
-              <p id="ticker-phase-note" class="phase-note text-meta">Waiting for market data…</p>
-            </div>
-            <div class="ticker-window" aria-label="Scrolling market ticker">
-              <div id="ticker-marquee" class="ticker-marquee">
-                <div id="ticker-track-a" class="ticker-track"></div>
-                <div id="ticker-track-b" class="ticker-track" aria-hidden="true"></div>
-              </div>
-            </div>
-          </article>
+        <footer class="footer-strip">
+          <p id="data-status" class="footer-item" role="status">Connecting to backend…</p>
+          <p id="feed-label" class="footer-item">Delayed SIP equities and Alpaca crypto</p>
+          <p id="last-updated" class="footer-item">Awaiting first sync</p>
 
-          <article class="widget surface surface--panel" aria-labelledby="sector-title">
-            <div class="widget-title-row surface surface--header">
-              <div>
-                <h2 id="sector-title" class="widget-title heading-section">Trending Sectors</h2>
-                <p class="widget-subtitle text-meta">Top performers in the current delayed snapshot.</p>
-              </div>
-            </div>
-            <ul id="sector-list" class="metric-list" aria-live="polite">
-              <li class="metric-row">
-                <span>Loading</span>
-                <strong class="neutral">--</strong>
-              </li>
-            </ul>
-          </article>
-
-          <article class="widget surface surface--panel" aria-labelledby="universe-title">
-            <div class="widget-title-row surface surface--header">
-              <div>
-                <h2 id="universe-title" class="widget-title heading-section">Screened Universe</h2>
-                <p id="universe-summary" class="widget-subtitle text-meta">Price $2-$20 / volume under 50M</p>
-              </div>
-            </div>
-            <ul id="universe-list" class="metric-list" aria-live="polite">
-              <li class="metric-row">
-                <span>Loading</span>
-                <strong class="neutral">--</strong>
-              </li>
-            </ul>
-          </article>
-        </section>
-
-        <footer class="footer-strip surface surface--footer">
-          <p id="data-status" class="footer-item text-meta" role="status">Connecting to backend…</p>
-          <p id="feed-label" class="footer-item text-meta">Delayed SIP equities and Alpaca crypto</p>
-          <p id="last-updated" class="footer-item text-meta">Awaiting first sync</p>
+          <div class="theme-switcher" role="group" aria-label="Choose theme">
+            <button
+              class="theme-button is-active"
+              data-theme="arcade"
+              aria-pressed="true"
+              type="button"
+            >
+              Arcade
+            </button>
+            <button class="theme-button" data-theme="dark" aria-pressed="false" type="button">
+              Dark
+            </button>
+            <button class="theme-button" data-theme="sunset" aria-pressed="false" type="button">
+              Sunset
+            </button>
+            <button class="theme-button" data-theme="mint" aria-pressed="false" type="button">
+              Mint
+            </button>
+            <button class="theme-button" data-theme="light" aria-pressed="false" type="button">
+              Light
+            </button>
+          </div>
         </footer>
       </section>
     </main>
+
     <script src="./app-config.js"></script>
     <script type="module" src="./src/main.js"></script>
   </body>
