@@ -22,8 +22,8 @@ function parseSpotifySearchQuery(query) {
 
   const parsedLimit = Number(query.limit);
   const limit = Number.isFinite(parsedLimit)
-    ? Math.min(12, Math.max(1, Math.floor(parsedLimit)))
-    : 8;
+    ? Math.min(50, Math.max(1, Math.floor(parsedLimit)))
+    : 40;
 
   return {
     q,

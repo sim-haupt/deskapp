@@ -171,7 +171,7 @@ async function handleSpotifySearch(event) {
   renderSpotifyStatus(elements, `Searching Spotify for "${query}"...`, "neutral");
 
   try {
-    const payload = await fetchSpotifySearch(query, 8);
+    const payload = await fetchSpotifySearch(query, 40);
     const results = Array.isArray(payload?.results) ? payload.results : [];
     state.lastSpotifyResults = results;
 

@@ -73,10 +73,10 @@ function createItem(type, item) {
 
 function rankResults(payload, requestedLimit) {
   const buckets = {
-    track: (payload.tracks?.items || []).slice(0, 3),
-    album: (payload.albums?.items || []).slice(0, 2),
-    playlist: (payload.playlists?.items || []).slice(0, 2),
-    artist: (payload.artists?.items || []).slice(0, 1)
+    track: payload.tracks?.items || [],
+    album: payload.albums?.items || [],
+    playlist: payload.playlists?.items || [],
+    artist: payload.artists?.items || []
   };
 
   return SEARCH_TYPES.flatMap((type) => buckets[type].map((item) => createItem(type, item)))
@@ -131,10 +131,11 @@ async function getSpotifyAccessToken() {
 
 async function searchSpotify(query, { limit = 8 } = {}) {
   const token = await getSpotifyAccessToken();
+  const perTypeLimit = Math.min(50, Math.max(1, Math.ceil(limit / SEARCH_TYPES.length)));
   const url = new URL("https://api.spotify.com/v1/search");
   url.searchParams.set("q", query);
   url.searchParams.set("type", SEARCH_TYPES.join(","));
-  url.searchParams.set("limit", "3");
+  url.searchParams.set("limit", String(perTypeLimit));
   url.searchParams.set("market", "DE");
 
   let response;

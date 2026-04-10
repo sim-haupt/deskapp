@@ -898,7 +898,7 @@ button:focus-visible {
   }
 
   .ticker-strip {
-    overflow: visible;
+    overflow: hidden;
     padding: 6px 0;
   }
 
