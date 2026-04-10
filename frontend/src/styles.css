@@ -287,6 +287,7 @@ button:focus-visible {
 .status-weather {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   min-width: 0;
   flex: 1;
@@ -295,6 +296,7 @@ button:focus-visible {
 .status-weather .status-large {
   min-width: 0;
   text-transform: uppercase;
+  text-align: center;
 }
 
 .divider {
