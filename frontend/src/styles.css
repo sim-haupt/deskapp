@@ -22,6 +22,11 @@
   --footer-highlight: rgba(99, 245, 155, 0.08);
   --top-highlight: rgba(255, 177, 59, 0.08);
   --scroll-track: #1a1028;
+  --spotify-track: var(--green);
+  --spotify-album: var(--blue);
+  --spotify-artist: var(--orange);
+  --spotify-playlist: var(--pink);
+  --spotify-podcast: var(--purple);
 }
 
 body[data-theme="dark"] {
@@ -601,11 +606,37 @@ button:focus-visible {
   font-size: 0.36rem;
   line-height: 1.2;
   text-transform: uppercase;
+  color: var(--spotify-type-color, var(--ink));
 }
 
 .spotify-filter-button.is-active {
-  background: var(--blue);
+  background: var(--spotify-type-color, var(--blue));
   color: var(--line);
+}
+
+.spotify-filter-button.type-track,
+.spotify-result-item.type-track {
+  --spotify-type-color: var(--spotify-track);
+}
+
+.spotify-filter-button.type-album,
+.spotify-result-item.type-album {
+  --spotify-type-color: var(--spotify-album);
+}
+
+.spotify-filter-button.type-artist,
+.spotify-result-item.type-artist {
+  --spotify-type-color: var(--spotify-artist);
+}
+
+.spotify-filter-button.type-playlist,
+.spotify-result-item.type-playlist {
+  --spotify-type-color: var(--spotify-playlist);
+}
+
+.spotify-filter-button.type-podcast,
+.spotify-result-item.type-podcast {
+  --spotify-type-color: var(--spotify-podcast);
 }
 
 .spotify-results {
@@ -629,6 +660,7 @@ button:focus-visible {
   text-align: left;
   display: grid;
   gap: 4px;
+  border-color: var(--spotify-type-color, var(--line));
 }
 
 .spotify-result-title,
@@ -648,6 +680,22 @@ button:focus-visible {
   line-height: 1.35;
   color: rgba(248, 242, 223, 0.7);
   text-transform: uppercase;
+}
+
+.spotify-result-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spotify-result-type {
+  color: var(--spotify-type-color, var(--blue));
+}
+
+.spotify-result-type::after {
+  content: "|";
+  color: rgba(248, 242, 223, 0.55);
+  margin-left: 8px;
 }
 
 .spotify-result-empty {

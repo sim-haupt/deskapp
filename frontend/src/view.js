@@ -109,7 +109,7 @@ function createTickerItem(quote) {
 
 function createSpotifyResultItem(item, onSelect) {
   const listItem = document.createElement("li");
-  listItem.className = "spotify-result-item";
+  listItem.className = `spotify-result-item type-${item.type || "unknown"}`;
 
   const button = document.createElement("button");
   button.className = "spotify-result-button";
@@ -122,8 +122,15 @@ function createSpotifyResultItem(item, onSelect) {
 
   const meta = document.createElement("span");
   meta.className = "spotify-result-meta";
-  meta.textContent = `${(item.type || "item").toUpperCase()} | ${item.subtitle || "Spotify"}`;
 
+  const type = document.createElement("span");
+  type.className = `spotify-result-type type-${item.type || "unknown"}`;
+  type.textContent = item.type || "item";
+
+  const subtitle = document.createElement("span");
+  subtitle.textContent = item.subtitle || "Spotify";
+
+  meta.append(type, subtitle);
   button.append(title, meta);
   listItem.append(button);
   return listItem;
