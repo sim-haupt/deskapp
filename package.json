@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "postinstall": "npm --prefix backend install",
     "build:frontend": "npm --prefix frontend run build",
     "check:backend": "npm --prefix backend run check",
     "dev:backend": "npm --prefix backend run dev",
+    "start": "npm --prefix backend run start",
     "start:backend": "npm --prefix backend run start"
   }
 }

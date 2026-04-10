@@ -17,36 +17,36 @@
     <link rel="stylesheet" href="./src/styles.css" />
   </head>
   <body>
-    <main class="app-shell">
-      <section class="desktop-frame" aria-labelledby="app-title">
-        <header class="top-bar panel">
+    <main class="app-shell layout-shell">
+      <section class="desktop-frame layout-frame" aria-labelledby="app-title">
+        <header class="top-bar surface surface--panel">
           <div class="brand-block">
-            <p class="eyebrow">RETRO MARKET BOARD</p>
-            <h1 id="app-title">Pixel Desk</h1>
-            <p class="hero-copy">
+            <p class="eyebrow text-eyebrow">RETRO MARKET BOARD</p>
+            <h1 id="app-title" class="heading-display">Pixel Desk</h1>
+            <p class="hero-copy text-body-muted">
               Weather, market session timing, delayed Alpaca quotes, and a lightweight screened universe.
             </p>
           </div>
 
-          <div class="status-grid" aria-label="Current dashboard status">
-            <section class="status-card">
-              <h2 class="card-label">Berlin Date</h2>
+          <div class="status-grid layout-grid layout-grid--status" aria-label="Current dashboard status">
+            <section class="status-card surface surface--inset">
+              <h2 class="card-label text-meta">Berlin Date</h2>
               <p id="current-date" class="status-large">Loading...</p>
-              <div class="clock-pair">
+              <div class="clock-pair cluster cluster--clock">
                 <div>
-                  <p class="clock-label">Berlin</p>
+                  <p class="clock-label text-meta">Berlin</p>
                   <p id="time-cet" class="status-clock">--:--:--</p>
                 </div>
                 <div>
-                  <p class="clock-label">New York</p>
+                  <p class="clock-label text-meta">New York</p>
                   <p id="time-ny" class="status-clock secondary">--:--:--</p>
                 </div>
               </div>
             </section>
 
-            <section class="status-card">
-              <h2 class="card-label">Selected City</h2>
-              <div class="weather-stack">
+            <section class="status-card surface surface--inset">
+              <h2 class="card-label text-meta">Selected City</h2>
+              <div class="weather-stack layout-weather">
                 <img
                   id="weather-icon"
                   class="weather-icon"
@@ -58,63 +58,63 @@
                 <div>
                   <p id="weather-city-label" class="status-large">Langen</p>
                   <p id="weather-temp-inline" class="weather-reading">--°C</p>
-                  <p id="weather-status-inline" class="weather-copy">Syncing weather…</p>
+                  <p id="weather-status-inline" class="weather-copy text-body-muted">Syncing weather…</p>
                 </div>
               </div>
             </section>
 
-            <section class="status-card">
-              <h2 class="card-label">Session Timer</h2>
+            <section class="status-card surface surface--inset">
+              <h2 class="card-label text-meta">Session Timer</h2>
               <p id="header-session-phase" class="session-phase">Checking session</p>
               <p id="header-session-countdown" class="session-countdown">Next phase in --:--</p>
-              <p class="status-note">Based on America/New_York market hours.</p>
+              <p class="status-note text-meta">Based on America/New_York market hours.</p>
             </section>
           </div>
         </header>
 
-        <section class="controls-row panel" aria-label="Dashboard controls">
+        <section class="controls-row surface surface--panel" aria-label="Dashboard controls">
           <div class="control-group">
-            <p class="control-label">City</p>
-            <div class="button-row" role="group" aria-label="Choose city">
-              <button class="control-button city-button is-active" data-city="langen" aria-pressed="true" type="button">
+            <p class="control-label text-meta">City</p>
+            <div class="button-row cluster cluster--controls" role="group" aria-label="Choose city">
+              <button class="control-button button button--control button--city city-button is-active" data-city="langen" aria-pressed="true" type="button">
                 Langen
               </button>
-              <button class="control-button city-button" data-city="heidelberg" aria-pressed="false" type="button">
+              <button class="control-button button button--control button--city city-button" data-city="heidelberg" aria-pressed="false" type="button">
                 Heidelberg
               </button>
             </div>
           </div>
 
           <div class="control-group">
-            <p class="control-label">Theme</p>
-            <div class="button-row" role="group" aria-label="Choose theme">
-              <button class="control-button theme-button is-active" data-theme="arcade" aria-pressed="true" type="button">
+            <p class="control-label text-meta">Theme</p>
+            <div class="button-row cluster cluster--controls" role="group" aria-label="Choose theme">
+              <button class="control-button button button--control button--theme theme-button is-active" data-theme="arcade" aria-pressed="true" type="button">
                 Arcade
               </button>
-              <button class="control-button theme-button" data-theme="dark" aria-pressed="false" type="button">
+              <button class="control-button button button--control button--theme theme-button" data-theme="dark" aria-pressed="false" type="button">
                 Dark
               </button>
-              <button class="control-button theme-button" data-theme="sunset" aria-pressed="false" type="button">
+              <button class="control-button button button--control button--theme theme-button" data-theme="sunset" aria-pressed="false" type="button">
                 Sunset
               </button>
-              <button class="control-button theme-button" data-theme="mint" aria-pressed="false" type="button">
+              <button class="control-button button button--control button--theme theme-button" data-theme="mint" aria-pressed="false" type="button">
                 Mint
               </button>
-              <button class="control-button theme-button" data-theme="light" aria-pressed="false" type="button">
+              <button class="control-button button button--control button--theme theme-button" data-theme="light" aria-pressed="false" type="button">
                 Light
               </button>
             </div>
           </div>
         </section>
 
-        <section class="dashboard-grid" aria-live="polite">
-          <article class="widget panel widget-wide" aria-labelledby="ticker-title">
-            <div class="widget-title-row">
+        <section class="dashboard-grid layout-grid layout-grid--dashboard" aria-live="polite">
+          <article class="widget surface surface--panel widget-wide" aria-labelledby="ticker-title">
+            <div class="widget-title-row surface surface--header">
               <div>
-                <h2 id="ticker-title" class="widget-title">Market Ticker</h2>
-                <p class="widget-subtitle">Delayed equities and crypto overview from the Railway API.</p>
+                <h2 id="ticker-title" class="widget-title heading-section">Market Ticker</h2>
+                <p class="widget-subtitle text-meta">Delayed equities and crypto overview from the Railway API.</p>
               </div>
-              <p id="ticker-phase-note" class="phase-note">Waiting for market data…</p>
+              <p id="ticker-phase-note" class="phase-note text-meta">Waiting for market data…</p>
             </div>
             <div class="ticker-window" aria-label="Scrolling market ticker">
               <div id="ticker-marquee" class="ticker-marquee">
@@ -124,11 +124,11 @@
             </div>
           </article>
 
-          <article class="widget panel" aria-labelledby="sector-title">
-            <div class="widget-title-row">
+          <article class="widget surface surface--panel" aria-labelledby="sector-title">
+            <div class="widget-title-row surface surface--header">
               <div>
-                <h2 id="sector-title" class="widget-title">Trending Sectors</h2>
-                <p class="widget-subtitle">Top performers in the current delayed snapshot.</p>
+                <h2 id="sector-title" class="widget-title heading-section">Trending Sectors</h2>
+                <p class="widget-subtitle text-meta">Top performers in the current delayed snapshot.</p>
               </div>
             </div>
             <ul id="sector-list" class="metric-list" aria-live="polite">
@@ -139,11 +139,11 @@
             </ul>
           </article>
 
-          <article class="widget panel" aria-labelledby="universe-title">
-            <div class="widget-title-row">
+          <article class="widget surface surface--panel" aria-labelledby="universe-title">
+            <div class="widget-title-row surface surface--header">
               <div>
-                <h2 id="universe-title" class="widget-title">Screened Universe</h2>
-                <p id="universe-summary" class="widget-subtitle">Price $2-$20 / volume under 50M</p>
+                <h2 id="universe-title" class="widget-title heading-section">Screened Universe</h2>
+                <p id="universe-summary" class="widget-subtitle text-meta">Price $2-$20 / volume under 50M</p>
               </div>
             </div>
             <ul id="universe-list" class="metric-list" aria-live="polite">
@@ -155,10 +155,10 @@
           </article>
         </section>
 
-        <footer class="footer-strip panel">
-          <p id="data-status" class="footer-item" role="status">Connecting to backend…</p>
-          <p id="feed-label" class="footer-item">Delayed SIP equities and Alpaca crypto</p>
-          <p id="last-updated" class="footer-item">Awaiting first sync</p>
+        <footer class="footer-strip surface surface--footer">
+          <p id="data-status" class="footer-item text-meta" role="status">Connecting to backend…</p>
+          <p id="feed-label" class="footer-item text-meta">Delayed SIP equities and Alpaca crypto</p>
+          <p id="last-updated" class="footer-item text-meta">Awaiting first sync</p>
         </footer>
       </section>
     </main>

@@ -111,6 +111,15 @@ Add these Railway variables:
 
 The repo already includes [`backend/railway.json`](/Users/szy/Documents/GitHub/deskapp/backend/railway.json).
 
+If Railway is pointed at the repository root instead of `backend/`, the root [`package.json`](/Users/szy/Documents/GitHub/deskapp/package.json) now includes:
+
+- a root `start` script that runs the backend
+- a root `postinstall` script that installs backend dependencies
+
+That makes root-level Railway deployments work as a fallback, but the cleaner setup is still:
+
+- Railway service root directory: `backend`
+
 ## Available endpoints
 
 - `GET /health`
