@@ -35,29 +35,74 @@ function getAlpacaHeaders() {
 }
 
 async function fetchStockLatestBars(symbols) {
-  const url = new URL("https://data.alpaca.markets/v2/stocks/bars/latest");
-  url.searchParams.set("symbols", symbols.join(","));
-  url.searchParams.set("feed", "delayed_sip");
-
-  return fetchJson(url, {
-    headers: getAlpacaHeaders(),
-    label: "Alpaca latest stock bars"
+  return fetchStockBarsWithFeedFallback({
+    endpoint: "https://data.alpaca.markets/v2/stocks/bars/latest",
+    symbols,
+    label: "Alpaca latest stock bars",
+    applySpecificParams(url) {
+      url.searchParams.set("symbols", symbols.join(","));
+    }
   });
 }
 
 async function fetchStockDailyBars(symbols, start, end) {
-  const url = new URL("https://data.alpaca.markets/v2/stocks/bars");
-  url.searchParams.set("symbols", symbols.join(","));
-  url.searchParams.set("timeframe", "1Day");
-  url.searchParams.set("start", isoTimestamp(start));
-  url.searchParams.set("end", isoTimestamp(end));
-  url.searchParams.set("feed", "delayed_sip");
-  url.searchParams.set("limit", "10000");
-
-  return fetchJson(url, {
-    headers: getAlpacaHeaders(),
-    label: "Alpaca daily stock bars"
+  return fetchStockBarsWithFeedFallback({
+    endpoint: "https://data.alpaca.markets/v2/stocks/bars",
+    symbols,
+    label: "Alpaca daily stock bars",
+    applySpecificParams(url) {
+      url.searchParams.set("symbols", symbols.join(","));
+      url.searchParams.set("timeframe", "1Day");
+      url.searchParams.set("start", isoTimestamp(start));
+      url.searchParams.set("end", isoTimestamp(end));
+      url.searchParams.set("limit", "10000");
+    }
   });
+}
+
+function isRetryableAlpacaFeedError(error) {
+  return (
+    error &&
+    error.name === "HttpError" &&
+    typeof error.message === "string" &&
+    error.message.includes("failed with status 400")
+  );
+}
+
+async function fetchStockBarsWithFeedFallback({ endpoint, symbols, label, applySpecificParams }) {
+  const feedAttempts = ["delayed_sip", "iex", ""];
+  let lastError;
+
+  for (const feed of feedAttempts) {
+    const url = new URL(endpoint);
+    applySpecificParams(url);
+
+    if (feed) {
+      url.searchParams.set("feed", feed);
+    }
+
+    try {
+      const payload = await fetchJson(url, {
+        headers: getAlpacaHeaders(),
+        label
+      });
+
+      return payload;
+    } catch (error) {
+      lastError = error;
+
+      if (!isRetryableAlpacaFeedError(error) || !feed) {
+        throw error;
+      }
+
+      logger.warn("Retrying Alpaca stock request with fallback feed", {
+        label,
+        failedFeed: feed
+      });
+    }
+  }
+
+  throw lastError;
 }
 
 async function fetchCryptoSnapshots(symbols) {
