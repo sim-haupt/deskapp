@@ -9,6 +9,7 @@ Pixel Desk is a retro-style market dashboard with:
 - a market ticker and sector overview
 - a Spotify search widget
 - upcoming events from Google Calendar
+- a linked world news widget
 
 ## Repo layout
 

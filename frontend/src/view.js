@@ -182,6 +182,26 @@ function createCalendarDayGroup(dayKey, events) {
   return item;
 }
 
+function createNewsItem(item) {
+  const row = document.createElement("li");
+  row.className = "news-row";
+
+  const link = document.createElement("a");
+  link.className = "news-link";
+  link.href = item.link;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.textContent = item.title || "Untitled story";
+
+  const meta = document.createElement("span");
+  meta.className = "news-meta";
+  const timeLabel = item.publishedAt ? formatUpdateTime(item.publishedAt) : "--";
+  meta.textContent = `${item.source || "News"} | ${timeLabel}`;
+
+  row.append(link, meta);
+  return row;
+}
+
 function groupCalendarEventsByDay(events) {
   return events.reduce((groups, event) => {
     const dayKey = event.startsAt ? event.startsAt.slice(0, 10) : "unknown";
@@ -381,6 +401,21 @@ export function renderCalendarEvents(elements, payload) {
     elements.calendarList,
     groups.map((group) => createCalendarDayGroup(group.dayKey, group.events))
   );
+}
+
+export function renderNews(elements, payload) {
+  if (!elements.newsList) {
+    return;
+  }
+
+  const items = Array.isArray(payload?.items) ? payload.items : [];
+
+  if (items.length === 0) {
+    replaceChildren(elements.newsList, []);
+    return;
+  }
+
+  replaceChildren(elements.newsList, items.map(createNewsItem));
 }
 
 export function renderRecentDays(elements, lastSevenDays) {

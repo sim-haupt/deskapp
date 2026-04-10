@@ -4,7 +4,8 @@ import {
   fetchDashboard,
   fetchLatestVideo,
   fetchSpotifySearch,
-  fetchTradeSummary
+  fetchTradeSummary,
+  fetchWorldNews
 } from "./api.js";
 import {
   renderClock,
@@ -13,6 +14,7 @@ import {
   renderFooter,
   renderLatestVideo,
   renderLoadingState,
+  renderNews,
   renderRecentDays,
   renderRefreshError,
   renderSectors,
@@ -58,6 +60,7 @@ const elements = {
   spotifyResults: document.querySelector("#spotify-results"),
   spotifyPlayerFrame: document.querySelector("#spotify-player-frame"),
   calendarList: document.querySelector("#calendar-list"),
+  newsList: document.querySelector("#news-list"),
   tickerTrackA: document.querySelector("#ticker-track-a"),
   tickerTrackB: document.querySelector("#ticker-track-b"),
   sectorList: document.querySelector("#sector-list"),
@@ -76,6 +79,7 @@ const state = {
   lastTradeSummary: null,
   lastVideo: null,
   lastCalendar: null,
+  lastNews: null,
   lastSpotifyResults: [],
   activeSpotifyType: DEFAULT_SPOTIFY_TYPE,
   spotifySearchTimer: null,
@@ -284,10 +288,11 @@ async function refreshDashboard({ showLoading = false } = {}) {
     renderSectors(elements, dashboardPayload.market.sectors);
     renderFooter(elements, dashboardPayload);
 
-    const [tradeSummaryResult, latestVideoResult, calendarResult] = await Promise.allSettled([
+    const [tradeSummaryResult, latestVideoResult, calendarResult, newsResult] = await Promise.allSettled([
       fetchTradeSummary(),
       fetchLatestVideo(),
-      fetchCalendarEvents()
+      fetchCalendarEvents(),
+      fetchWorldNews()
     ]);
 
     if (tradeSummaryResult.status === "fulfilled") {
@@ -317,6 +322,15 @@ async function refreshDashboard({ showLoading = false } = {}) {
       renderCalendarEvents(elements, state.lastCalendar);
     } else {
       renderCalendarEvents(elements, null);
+    }
+
+    if (newsResult.status === "fulfilled") {
+      state.lastNews = newsResult.value;
+      renderNews(elements, newsResult.value);
+    } else if (state.lastNews) {
+      renderNews(elements, state.lastNews);
+    } else {
+      renderNews(elements, null);
     }
   } catch (error) {
     renderRefreshError(elements, error.message, Boolean(state.lastPayload));

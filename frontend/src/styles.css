@@ -482,6 +482,11 @@ button:focus-visible {
   grid-row: span 3;
 }
 
+.widget-news {
+  grid-column: span 3;
+  grid-row: span 3;
+}
+
 .widget {
   min-height: 0;
   background: var(--panel);
@@ -803,6 +808,46 @@ button:focus-visible {
   color: var(--blue);
 }
 
+.news-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.news-row {
+  display: grid;
+  gap: 6px;
+  padding: 8px 0;
+  border-bottom: 4px solid rgba(73, 183, 255, 0.22);
+}
+
+.news-row:last-child {
+  border-bottom: 0;
+}
+
+.news-link {
+  color: var(--ink);
+  font-size: clamp(0.46rem, 0.6vw, 0.62rem);
+  line-height: 1.45;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.news-link:focus-visible,
+.news-link:hover {
+  color: var(--orange);
+}
+
+.news-meta {
+  color: var(--blue);
+  font-size: 0.38rem;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
 .metric-list {
   list-style: none;
   margin: 0;
@@ -1072,6 +1117,11 @@ button:focus-visible {
     grid-row: span 1;
   }
 
+  .widget-news {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+
   .status-row {
     flex-wrap: wrap;
     align-items: center;
@@ -1193,7 +1243,8 @@ button:focus-visible {
   .widget-secondary,
   .widget-video,
   .widget-spotify,
-  .widget-calendar {
+  .widget-calendar,
+  .widget-news {
     grid-column: span 1;
     grid-row: span 1;
   }
@@ -1349,6 +1400,11 @@ button:focus-visible {
   }
 
   .widget-calendar {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+
+  .widget-news {
     grid-column: span 1;
     grid-row: span 1;
   }

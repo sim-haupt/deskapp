@@ -22,6 +22,7 @@ cp .env.example .env
 - `SPOTIFY_CLIENT_ID` for the Spotify search widget
 - `SPOTIFY_CLIENT_SECRET` for the Spotify search widget
 - `GOOGLE_CALENDAR_ICAL_URL` for the calendar widget
+- `NEWS_RSS_URL` optional custom world news RSS feed
 - `FRONTEND_ORIGINS`
 - `EXTERNAL_TIMEOUT_MS` optional, defaults to `12000`
 
@@ -69,6 +70,7 @@ ALPACA_SECRET_KEY=your_alpaca_secret_key
 SPOTIFY_CLIENT_ID=your_spotify_client_id
 SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
 GOOGLE_CALENDAR_ICAL_URL=https://calendar.google.com/calendar/ical/.../basic.ics
+NEWS_RSS_URL=https://news.google.com/rss/headlines/section/topic/WORLD?hl=en-US&gl=US&ceid=US:en
 FRONTEND_ORIGINS=https://your-app.vercel.app,https://your-preview-domain.vercel.app
 EXTERNAL_TIMEOUT_MS=12000
 ```
@@ -115,6 +117,7 @@ Add these Railway variables:
 - `SPOTIFY_CLIENT_ID`
 - `SPOTIFY_CLIENT_SECRET`
 - `GOOGLE_CALENDAR_ICAL_URL`
+- `NEWS_RSS_URL` optional
 - `FRONTEND_ORIGINS`
 - `EXTERNAL_TIMEOUT_MS` optional
 
@@ -134,5 +137,6 @@ That makes root-level Railway deployments work as a fallback, but the cleaner se
 - `GET /health`
 - `GET /api/dashboard?city=langen&priceMin=2&priceMax=20&maxVolume=50000000&limit=8`
 - `GET /api/calendar/events`
+- `GET /api/news/world`
 - `GET /api/spotify/search?q=your-query`
 - `GET /api/youtube/latest`

@@ -50,7 +50,8 @@ const env = {
   alpacaSecretKey: String(process.env.ALPACA_SECRET_KEY || "").trim(),
   spotifyClientId: String(process.env.SPOTIFY_CLIENT_ID || "").trim(),
   spotifyClientSecret: String(process.env.SPOTIFY_CLIENT_SECRET || "").trim(),
-  googleCalendarIcalUrl: String(process.env.GOOGLE_CALENDAR_ICAL_URL || "").trim()
+  googleCalendarIcalUrl: String(process.env.GOOGLE_CALENDAR_ICAL_URL || "").trim(),
+  newsRssUrl: String(process.env.NEWS_RSS_URL || "").trim()
 };
 
 env.hasAlpacaCredentials = Boolean(env.alpacaKeyId && env.alpacaSecretKey);

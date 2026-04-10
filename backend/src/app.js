@@ -6,6 +6,7 @@ const logger = require("./logger");
 const { parseDashboardQuery, parseSpotifySearchQuery } = require("./validation");
 const { getCalendarEvents } = require("./calendar-service");
 const { getDashboardPayload } = require("./dashboard-service");
+const { getWorldNews } = require("./news-service");
 const { searchSpotify } = require("./spotify-service");
 const { getLatestYoutubeVideo } = require("./youtube-service");
 
@@ -113,6 +114,15 @@ app.get("/api/dashboard", async (request, response, next) => {
 app.get("/api/calendar/events", async (_request, response, next) => {
   try {
     const payload = await getCalendarEvents();
+    response.status(200).json(payload);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/api/news/world", async (_request, response, next) => {
+  try {
+    const payload = await getWorldNews();
     response.status(200).json(payload);
   } catch (error) {
     next(error);

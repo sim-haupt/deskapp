@@ -99,6 +99,22 @@ export async function fetchCalendarEvents() {
   return response.json();
 }
 
+export async function fetchWorldNews() {
+  const response = await fetch(buildApiUrl("/api/news/world"), {
+    method: "GET",
+    headers: {
+      Accept: "application/json"
+    },
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+  });
+
+  if (!response.ok) {
+    throw new Error(`News request failed with status ${response.status}.`);
+  }
+
+  return response.json();
+}
+
 export async function fetchSpotifySearch(query, limit = 40, type = "all") {
   const response = await fetch(
     buildApiUrl("/api/spotify/search", {
