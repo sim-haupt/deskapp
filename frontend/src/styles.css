@@ -236,7 +236,6 @@ button:focus-visible {
 
 .top-status,
 .widget,
-.ticker-strip,
 .footer-strip {
   border: 4px solid var(--line);
   box-shadow:
@@ -398,7 +397,9 @@ button:focus-visible {
 .main-content {
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  grid-auto-flow: row;
   gap: 10px;
   overflow: auto;
   padding-right: 4px;
@@ -615,7 +616,7 @@ button:focus-visible {
 
 @media (max-width: 1180px) {
   .app-shell {
-    padding: 10px;
+    padding: 8px;
     place-items: start center;
   }
 
@@ -623,36 +624,58 @@ button:focus-visible {
     min-height: calc(100vh - 20px);
     max-height: none;
     height: auto;
-    padding: 12px;
-    gap: 12px;
+    padding: 10px;
+    gap: 10px;
   }
 
   .ticker-strip {
     overflow: visible;
-    padding: 8px 0;
+    padding: 6px 0;
   }
 
   .main-content {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: auto;
     overflow: visible;
     padding-right: 0;
   }
 
+  .status-row {
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    row-gap: 8px;
+  }
+
+  .status-row-main .status-date {
+    flex: 1 1 auto;
+  }
+
+  .status-row-main .status-weather {
+    flex: 1 1 100%;
+    order: 3;
+  }
+
+  .status-row-main .city-switcher-top {
+    order: 2;
+    margin-left: auto;
+  }
+
+  .status-row-sub .time-strip {
+    flex: 1 1 auto;
+  }
+
+  .status-row-sub .session-strip {
+    margin-left: auto;
+  }
+
   .footer-strip {
     grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   .theme-switcher {
     justify-self: start;
-  }
-
-  .status-row {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .session-strip {
-    align-items: center;
-    text-align: left;
   }
 
   .phase-note {
@@ -661,24 +684,88 @@ button:focus-visible {
 }
 
 @media (max-width: 700px) {
+  .app-shell {
+    padding: 6px;
+  }
+
   .desktop-frame {
     height: auto;
-    min-height: calc(100vh - 20px);
+    min-height: calc(100vh - 12px);
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .top-status {
+    padding: 8px 10px;
+  }
+
+  .status-row + .status-row {
+    margin-top: 8px;
+    padding-top: 8px;
+  }
+
+  .main-content {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    gap: 8px;
+  }
+
+  .status-row-main .city-switcher-top {
+    width: 100%;
+    justify-content: flex-end;
+    margin-left: 0;
+  }
+
+  .status-row-sub .time-strip {
+    flex: 1 1 100%;
+  }
+
+  .status-row-sub .session-strip {
+    margin-left: 0;
+    flex: 1 1 100%;
+    justify-content: flex-start;
+    white-space: normal;
   }
 
   .status-large,
   .status-clock {
-    line-height: 1.8;
+    line-height: 1.5;
   }
 
   .widget-title-row {
     flex-direction: column;
   }
 
-  .theme-button,
-  .city-button {
+  .theme-button {
     width: 100%;
     text-align: center;
+  }
+
+  .city-button {
+    width: auto;
+    min-width: 112px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 520px) {
+  .status-weather {
+    align-items: flex-start;
+  }
+
+  .status-weather .status-large {
+    line-height: 1.4;
+  }
+
+  .ticker-track {
+    gap: 8px;
+    padding: 0 8px;
+  }
+
+  .ticker-item {
+    font-size: 0.4rem;
+    padding: 7px 8px 5px;
+    gap: 6px;
   }
 }
 
