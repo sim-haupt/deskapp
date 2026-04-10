@@ -154,7 +154,7 @@ async function getSpotifyAccessToken() {
 async function searchSpotify(query, { limit = 8, type = "all" } = {}) {
   const token = await getSpotifyAccessToken();
   const searchTypes = getSearchTypes(type);
-  const perTypeLimit = Math.min(50, Math.max(1, Math.ceil(limit / searchTypes.length)));
+  const perTypeLimit = Math.min(10, Math.max(1, Math.ceil(limit / searchTypes.length)));
   const url = new URL("https://api.spotify.com/v1/search");
   url.searchParams.set("q", query);
   url.searchParams.set("type", searchTypes.join(","));
