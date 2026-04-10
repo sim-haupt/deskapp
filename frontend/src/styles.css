@@ -741,13 +741,22 @@ button:focus-visible {
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 8px;
   align-content: start;
 }
 
 .calendar-day-group {
   display: grid;
   gap: 6px;
+  padding: 0 0 10px;
+  border-bottom: 4px solid rgba(73, 183, 255, 0.22);
+}
+
+.calendar-day-group + .calendar-day-group {
+  padding-top: 10px;
+}
+
+.calendar-day-group:last-child {
+  border-bottom: 0;
 }
 
 .calendar-day-heading {
@@ -768,12 +777,7 @@ button:focus-visible {
 .calendar-event-row {
   display: grid;
   gap: 6px;
-  padding: 8px 0;
-  border-bottom: 4px solid rgba(73, 183, 255, 0.22);
-}
-
-.calendar-event-row:last-child {
-  border-bottom: 0;
+  padding: 6px 0;
 }
 
 .calendar-event-title,
