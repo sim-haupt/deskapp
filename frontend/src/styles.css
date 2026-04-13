@@ -27,6 +27,19 @@
   --spotify-artist: var(--orange);
   --spotify-playlist: var(--pink);
   --spotify-podcast: var(--purple);
+  --app-padding: clamp(0.5rem, 3vw, 3rem);
+  --frame-padding: clamp(6px, 0.74vw, 14px);
+  --frame-gap: clamp(5px, 0.63vw, 12px);
+  --panel-padding-block: clamp(6px, 0.53vw, 10px);
+  --panel-padding-inline: clamp(8px, 0.74vw, 14px);
+  --widget-body-padding: clamp(7px, 0.64vw, 12px);
+  --content-gap: clamp(5px, 0.53vw, 10px);
+  --inline-gap: clamp(4px, 0.42vw, 8px);
+  --border-width: clamp(2px, 0.22vw, 4px);
+  --outline-width: clamp(2px, 0.16vw, 3px);
+  --shadow-offset-xs: clamp(2px, 0.22vw, 4px);
+  --shadow-offset-sm: clamp(3px, 0.32vw, 6px);
+  --shadow-offset-lg: clamp(5px, 0.63vw, 12px);
 }
 
 body[data-theme="dark"] {
@@ -148,6 +161,10 @@ body {
   overflow-y: hidden;
 }
 
+html {
+  font-size: clamp(5px, 0.84vw, 16px);
+}
+
 body {
   font-family: "Press Start 2P", cursive;
   background:
@@ -223,7 +240,7 @@ button:focus-visible {
   display: grid;
   align-items: stretch;
   justify-items: center;
-  padding: 3rem;
+  padding: var(--app-padding);
   box-sizing: border-box;
   overflow: hidden;
 }
@@ -237,44 +254,44 @@ button:focus-visible {
   background:
     linear-gradient(180deg, var(--panel-highlight), transparent 30%),
     linear-gradient(180deg, var(--panel-2), var(--panel));
-  border: 4px solid var(--line);
+  border: var(--border-width) solid var(--line);
   box-shadow:
-    0 0 0 4px var(--purple),
-    0 0 0 8px var(--line),
-    12px 12px 0 var(--shadow);
+    0 0 0 var(--border-width) var(--purple),
+    0 0 0 calc(var(--border-width) * 2) var(--line),
+    var(--shadow-offset-lg) var(--shadow-offset-lg) 0 var(--shadow);
   display: grid;
   grid-template-rows: auto auto 1fr auto;
-  gap: 12px;
-  padding: 14px;
+  gap: var(--frame-gap);
+  padding: var(--frame-padding);
 }
 
 .top-status,
 .widget,
 .footer-strip {
-  border: 4px solid var(--line);
+  border: var(--border-width) solid var(--line);
   box-shadow:
-    0 0 0 3px var(--outline),
-    6px 6px 0 var(--shadow);
+    0 0 0 var(--outline-width) var(--outline),
+    var(--shadow-offset-sm) var(--shadow-offset-sm) 0 var(--shadow);
 }
 
 .top-status {
   background:
     linear-gradient(180deg, var(--top-highlight), transparent 45%),
     var(--panel);
-  padding: 10px 14px;
+  padding: var(--panel-padding-block) var(--panel-padding-inline);
 }
 
 .status-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--frame-gap);
 }
 
 .status-row + .status-row {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 4px solid rgba(73, 183, 255, 0.3);
+  margin-top: var(--content-gap);
+  padding-top: var(--content-gap);
+  border-top: var(--border-width) solid rgba(73, 183, 255, 0.3);
 }
 
 .status-large,
@@ -298,7 +315,7 @@ button:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--inline-gap);
   min-width: 0;
   flex: 1;
 }
@@ -311,20 +328,20 @@ button:focus-visible {
 
 .divider {
   color: var(--pink);
-  margin: 0 6px;
+  margin: 0 var(--inline-gap);
 }
 
 .time-strip {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--inline-gap);
   flex-wrap: wrap;
 }
 
 .time-session-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--content-gap);
   min-width: 0;
   flex: 1;
 }
@@ -340,11 +357,11 @@ button:focus-visible {
 
 .live-pill {
   display: inline-block;
-  padding: 6px 8px 5px;
+  padding: clamp(3px, 0.32vw, 6px) var(--inline-gap) clamp(2px, 0.26vw, 5px);
   background: var(--red);
   color: var(--line);
   font-size: 0.44rem;
-  box-shadow: 4px 4px 0 var(--shadow);
+  box-shadow: var(--shadow-offset-xs) var(--shadow-offset-xs) 0 var(--shadow);
 }
 
 .live-pill.alt {
@@ -354,7 +371,7 @@ button:focus-visible {
 .session-strip {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--inline-gap);
   text-align: left;
   opacity: 0.82;
   white-space: nowrap;
@@ -364,7 +381,7 @@ button:focus-visible {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 10px;
+  gap: var(--content-gap);
   margin-left: auto;
   flex-wrap: wrap;
 }
@@ -373,7 +390,7 @@ button:focus-visible {
   margin: 0;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--inline-gap);
   font-size: 0.4rem;
   line-height: 1.2;
   color: rgba(248, 242, 223, 0.82);
@@ -401,7 +418,7 @@ button:focus-visible {
 .city-switcher,
 .theme-switcher {
   display: flex;
-  gap: 8px;
+  gap: var(--inline-gap);
   flex-wrap: wrap;
 }
 
@@ -414,13 +431,13 @@ button:focus-visible {
 .theme-button,
 .footer-icon-button,
 .modal-close-button {
-  border: 4px solid var(--line);
+  border: var(--border-width) solid var(--line);
   background: linear-gradient(180deg, #3e2d66, #271d41);
   color: var(--ink);
-  padding: 8px 10px;
+  padding: clamp(5px, 0.42vw, 8px) var(--content-gap);
   font-size: 0.46rem;
   text-transform: uppercase;
-  box-shadow: 4px 4px 0 var(--shadow);
+  box-shadow: var(--shadow-offset-xs) var(--shadow-offset-xs) 0 var(--shadow);
 }
 
 .city-button.is-active {
@@ -429,7 +446,7 @@ button:focus-visible {
 }
 
 .theme-button {
-  padding: 7px 9px;
+  padding: clamp(4px, 0.37vw, 7px) clamp(6px, 0.48vw, 9px);
   font-size: 0.42rem;
 }
 
@@ -440,8 +457,8 @@ button:focus-visible {
 
 .footer-icon-button {
   justify-self: end;
-  width: 38px;
-  height: 34px;
+  width: clamp(26px, 2vw, 38px);
+  height: clamp(24px, 1.8vw, 34px);
   padding: 0;
   display: inline-grid;
   place-items: center;
@@ -460,7 +477,7 @@ button:focus-visible {
   min-height: 0;
   background: transparent;
   overflow: hidden;
-  padding: 6px 0;
+  padding: clamp(3px, 0.32vw, 6px) 0;
   contain: inline-size;
 }
 
@@ -470,9 +487,9 @@ button:focus-visible {
   grid-template-columns: repeat(9, minmax(0, 1fr));
   grid-template-rows: repeat(6, minmax(0, 1fr));
   grid-auto-flow: row;
-  gap: 10px;
-  overflow: auto;
-  padding-right: 4px;
+  gap: var(--content-gap);
+  overflow: hidden;
+  padding-right: 0;
 }
 
 .widget-primary {
@@ -515,12 +532,12 @@ button:focus-visible {
 .widget-title-row {
   background: linear-gradient(90deg, var(--navy), #412974);
   color: var(--ink);
-  padding: 10px 14px 9px;
-  border-bottom: 4px solid var(--line);
+  padding: var(--panel-padding-block) var(--panel-padding-inline) clamp(5px, 0.48vw, 9px);
+  border-bottom: var(--border-width) solid var(--line);
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--frame-gap);
 }
 
 .widget-heading-group {
@@ -551,7 +568,7 @@ button:focus-visible {
 
 .widget-body {
   min-height: 0;
-  padding: 12px;
+  padding: var(--widget-body-padding);
   background:
     linear-gradient(180deg, rgba(73, 183, 255, 0.06), transparent 40%),
     linear-gradient(180deg, var(--panel-2), var(--panel));
@@ -590,12 +607,12 @@ button:focus-visible {
   max-width: calc(100vw - 2rem);
   max-height: calc(100dvh - 2rem);
   padding: 0;
-  border: 4px solid var(--line);
+  border: var(--border-width) solid var(--line);
   background: var(--panel);
   color: var(--ink);
   box-shadow:
-    0 0 0 4px var(--purple),
-    8px 8px 0 var(--shadow);
+    0 0 0 var(--border-width) var(--purple),
+    var(--shadow-offset-sm) var(--shadow-offset-sm) 0 var(--shadow);
 }
 
 .spotify-modal::backdrop {
@@ -632,25 +649,25 @@ button:focus-visible {
 .spotify-widget-body {
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr);
-  gap: 8px;
+  gap: var(--inline-gap);
   overflow: hidden;
 }
 
 .spotify-search-form {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 8px;
+  gap: var(--inline-gap);
 }
 
 .spotify-search-input,
 .spotify-filter-button,
 .spotify-result-button {
-  border: 4px solid var(--line);
+  border: var(--border-width) solid var(--line);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 45%),
     var(--panel);
   color: var(--ink);
-  box-shadow: 4px 4px 0 var(--shadow);
+  box-shadow: var(--shadow-offset-xs) var(--shadow-offset-xs) 0 var(--shadow);
 }
 
 .spotify-search-input {
@@ -1034,11 +1051,11 @@ button:focus-visible {
   align-items: center;
   gap: 6px 8px;
   padding: 10px 8px;
-  border: 4px solid var(--line);
+  border: var(--border-width) solid var(--line);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 45%),
     var(--panel);
-  box-shadow: 4px 4px 0 var(--shadow);
+  box-shadow: var(--shadow-offset-xs) var(--shadow-offset-xs) 0 var(--shadow);
   font-size: clamp(0.44rem, 0.6vw, 0.62rem);
   line-height: 1.25;
 }
@@ -1102,22 +1119,22 @@ button:focus-visible {
 .ticker-track {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--content-gap);
   min-width: max-content;
-  padding: 0 10px;
+  padding: 0 var(--content-gap);
   white-space: nowrap;
 }
 
 .ticker-item {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 10px 6px;
-  border: 4px solid var(--line);
+  gap: var(--inline-gap);
+  padding: clamp(5px, 0.42vw, 8px) var(--content-gap) clamp(4px, 0.32vw, 6px);
+  border: var(--border-width) solid var(--line);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 45%),
     var(--panel);
-  box-shadow: 4px 4px 0 var(--shadow);
+  box-shadow: var(--shadow-offset-xs) var(--shadow-offset-xs) 0 var(--shadow);
   font-size: 0.44rem;
   line-height: 1.25;
   text-transform: uppercase;
@@ -1661,6 +1678,185 @@ button:focus-visible {
     font-size: 0.4rem;
     padding: 7px 8px 5px;
     gap: 6px;
+  }
+}
+
+@media (max-width: 1180px), (orientation: portrait) {
+  .app-shell {
+    align-items: stretch;
+    padding: var(--app-padding);
+  }
+
+  .desktop-frame {
+    width: min(100%, 1980px);
+    min-height: 0;
+    height: 100%;
+    grid-template-rows: auto auto 1fr auto;
+    align-content: stretch;
+    padding: var(--frame-padding);
+    gap: var(--frame-gap);
+  }
+
+  .top-status,
+  .footer-strip,
+  .widget-title-row,
+  .widget-body {
+    padding-left: var(--panel-padding-inline);
+    padding-right: var(--panel-padding-inline);
+  }
+
+  .top-status {
+    padding-top: var(--panel-padding-block);
+    padding-bottom: var(--panel-padding-block);
+  }
+
+  .status-row {
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--frame-gap);
+  }
+
+  .status-row + .status-row {
+    margin-top: var(--content-gap);
+    padding-top: var(--content-gap);
+  }
+
+  .status-row-main .status-date,
+  .status-row-main .status-weather,
+  .status-row-main .city-switcher-top {
+    order: initial;
+  }
+
+  .status-row-main .status-date {
+    flex: 0 1 auto;
+  }
+
+  .status-row-main .status-weather {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .status-row-main .city-switcher-top {
+    width: auto;
+    justify-content: flex-end;
+    margin-left: auto;
+  }
+
+  .time-strip,
+  .time-session-row,
+  .session-strip,
+  .trade-summary-strip,
+  .city-switcher,
+  .theme-switcher {
+    flex-wrap: nowrap;
+  }
+
+  .status-row-sub .time-session-row {
+    flex: 1 1 auto;
+    justify-content: flex-start;
+  }
+
+  .status-row-sub .session-strip {
+    margin-left: 0;
+    justify-content: flex-start;
+    white-space: nowrap;
+  }
+
+  .status-row-sub .trade-summary-strip {
+    flex: 0 1 auto;
+    justify-content: flex-end;
+    margin-left: auto;
+    gap: var(--content-gap);
+  }
+
+  .main-content {
+    min-height: 0;
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+    grid-template-rows: repeat(6, minmax(0, 1fr));
+    grid-auto-rows: auto;
+    align-items: stretch;
+    align-content: stretch;
+    gap: var(--content-gap);
+    overflow: hidden;
+    padding-right: 0;
+  }
+
+  .widget,
+  .widget-primary,
+  .widget-secondary,
+  .widget-video,
+  .widget-calendar,
+  .widget-economic,
+  .widget-news {
+    align-self: stretch;
+  }
+
+  .widget-primary,
+  .widget-secondary,
+  .widget-video,
+  .widget-calendar,
+  .widget-economic,
+  .widget-news {
+    grid-column: span 3;
+    grid-row: span 3;
+  }
+
+  .widget-title-row {
+    flex-direction: row;
+    padding-top: var(--panel-padding-block);
+    padding-bottom: clamp(5px, 0.48vw, 9px);
+  }
+
+  .widget-body {
+    padding-top: var(--widget-body-padding);
+    padding-bottom: var(--widget-body-padding);
+  }
+
+  .latest-video-wrap {
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 16 / 9;
+  }
+
+  .footer-strip {
+    grid-template-columns: auto auto auto auto 1fr;
+    gap: var(--content-gap);
+  }
+
+  .footer-item {
+    white-space: nowrap;
+  }
+
+  .theme-switcher {
+    justify-self: end;
+  }
+
+  .theme-button,
+  .city-button {
+    width: auto;
+    min-width: 0;
+    padding: clamp(4px, 0.37vw, 7px) clamp(6px, 0.48vw, 9px);
+    text-align: center;
+  }
+
+  .recent-days-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--inline-gap);
+  }
+
+  .recent-day-row {
+    padding: clamp(6px, 0.53vw, 10px) 0;
+  }
+
+  .ticker-track {
+    gap: var(--inline-gap);
+    padding: 0 var(--inline-gap);
+  }
+
+  .ticker-item {
+    gap: var(--inline-gap);
+    padding: clamp(5px, 0.42vw, 8px) var(--content-gap) clamp(4px, 0.32vw, 6px);
   }
 }
 
