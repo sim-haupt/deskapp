@@ -499,7 +499,7 @@ button:focus-visible {
 
 .widget-secondary {
   grid-column: span 3;
-  grid-row: span 3;
+  grid-row: span 1;
 }
 
 .widget-video {
@@ -1784,7 +1784,6 @@ button:focus-visible {
 
   .widget,
   .widget-primary,
-  .widget-secondary,
   .widget-video,
   .widget-calendar,
   .widget-economic,
@@ -1800,6 +1799,11 @@ button:focus-visible {
   .widget-news {
     grid-column: span 3;
     grid-row: span 3;
+  }
+
+  .widget-secondary {
+    grid-column: span 3;
+    grid-row: span 1;
   }
 
   .widget-title-row {
