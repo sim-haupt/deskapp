@@ -499,12 +499,12 @@ button:focus-visible {
 
 .widget-secondary {
   grid-column: span 3;
-  grid-row: span 1;
+  grid-row: span 2;
 }
 
 .widget-video {
   grid-column: span 3;
-  grid-row: span 3;
+  grid-row: span 4;
 }
 
 .widget-calendar {
@@ -1792,7 +1792,6 @@ button:focus-visible {
   }
 
   .widget-primary,
-  .widget-secondary,
   .widget-video,
   .widget-calendar,
   .widget-economic,
@@ -1801,9 +1800,14 @@ button:focus-visible {
     grid-row: span 3;
   }
 
+  .widget-video {
+    grid-column: span 3;
+    grid-row: span 4;
+  }
+
   .widget-secondary {
     grid-column: span 3;
-    grid-row: span 1;
+    grid-row: span 2;
   }
 
   .widget-title-row {
