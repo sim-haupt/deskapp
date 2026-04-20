@@ -6,6 +6,7 @@ import {
   fetchLatestVideo,
   fetchSpotifySearch,
   fetchTradeSummary,
+  fetchWatchlistQuotes,
   fetchWorldNews
 } from "./api.js";
 import {
@@ -28,6 +29,7 @@ import {
   renderTradeSummary,
   renderTradeSummaryUnavailable,
   renderTicker,
+  renderWatchlistQuotes,
   renderWeather
 } from "./view.js";
 import { getSessionState } from "./session.js";
@@ -70,6 +72,7 @@ const elements = {
   tickerTrackA: document.querySelector("#ticker-track-a"),
   tickerTrackB: document.querySelector("#ticker-track-b"),
   sectorList: document.querySelector("#sector-list"),
+  watchlistList: document.querySelector("#watchlist-list"),
   recentDaysList: document.querySelector("#recent-days-list"),
   dataStatus: document.querySelector("#data-status"),
   feedLabel: document.querySelector("#feed-label"),
@@ -86,6 +89,7 @@ const state = {
   lastVideo: null,
   lastCalendar: null,
   lastEconomicCalendar: null,
+  lastWatchlist: null,
   lastNews: null,
   lastSpotifyResults: [],
   activeSpotifyType: DEFAULT_SPOTIFY_TYPE,
@@ -335,11 +339,19 @@ async function refreshDashboard({ showLoading = false } = {}) {
     renderSectors(elements, dashboardPayload.market.sectors);
     renderFooter(elements, dashboardPayload);
 
-    const [tradeSummaryResult, latestVideoResult, calendarResult, economicResult, newsResult] = await Promise.allSettled([
+    const [
+      tradeSummaryResult,
+      latestVideoResult,
+      calendarResult,
+      economicResult,
+      watchlistResult,
+      newsResult
+    ] = await Promise.allSettled([
       fetchTradeSummary(),
       fetchLatestVideo(),
       fetchCalendarEvents(),
       fetchEconomicCalendar(),
+      fetchWatchlistQuotes(),
       fetchWorldNews()
     ]);
 
@@ -379,6 +391,15 @@ async function refreshDashboard({ showLoading = false } = {}) {
       renderEconomicCalendar(elements, state.lastEconomicCalendar);
     } else {
       renderEconomicCalendar(elements, null);
+    }
+
+    if (watchlistResult.status === "fulfilled") {
+      state.lastWatchlist = watchlistResult.value;
+      renderWatchlistQuotes(elements, watchlistResult.value);
+    } else if (state.lastWatchlist) {
+      renderWatchlistQuotes(elements, state.lastWatchlist);
+    } else {
+      renderWatchlistQuotes(elements, null);
     }
 
     if (newsResult.status === "fulfilled") {

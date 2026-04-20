@@ -110,6 +110,26 @@ function createTickerItem(quote) {
   return item;
 }
 
+function createWatchlistQuoteItem(quote) {
+  const item = document.createElement("li");
+  item.className = `watchlist-card ${quote?.available === false ? "is-missing" : getTickerTone(quote?.pct)}`;
+
+  const symbol = document.createElement("span");
+  symbol.className = "watchlist-symbol";
+  symbol.textContent = quote?.label || quote?.symbol || "--";
+
+  const price = document.createElement("strong");
+  price.className = "watchlist-price";
+  price.textContent = quote?.available === false ? "--" : formatPrice(quote?.price);
+
+  const change = document.createElement("span");
+  change.className = "watchlist-change";
+  change.textContent = quote?.available === false ? "No data" : formatPercent(quote?.pct);
+
+  item.append(symbol, price, change);
+  return item;
+}
+
 function createSpotifyResultItem(item, onSelect) {
   const listItem = document.createElement("li");
   listItem.className = `spotify-result-item type-${item.type || "unknown"}`;
@@ -344,6 +364,21 @@ export function renderSectors(elements, sectors) {
   );
 }
 
+export function renderWatchlistQuotes(elements, payload) {
+  if (!elements.watchlistList) {
+    return;
+  }
+
+  const quotes = Array.isArray(payload?.quotes) ? payload.quotes : [];
+
+  if (quotes.length === 0) {
+    replaceChildren(elements.watchlistList, [createWatchlistQuoteItem({ label: "OFFLINE", available: false })]);
+    return;
+  }
+
+  replaceChildren(elements.watchlistList, quotes.map(createWatchlistQuoteItem));
+}
+
 export function renderFooter(elements, payload) {
   elements.dataStatus.textContent = "Backend online";
   elements.feedLabel.textContent = payload.market.feedLabel;
@@ -535,6 +570,7 @@ export function renderRefreshError(elements, message, hasExistingData) {
   if (!hasExistingData) {
     elements.feedLabel.textContent = "Backend unavailable";
     replaceChildren(elements.sectorList, [createMetricRow("Backend unavailable", "--")]);
+    renderWatchlistQuotes(elements, null);
     renderTicker(elements, []);
     renderTradeSummaryUnavailable(elements);
   }

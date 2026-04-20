@@ -42,6 +42,20 @@ const sectorSymbols = [
   { symbol: "XLRE", label: "REAL ESTATE" }
 ];
 
+const watchlistSymbols = [
+  { symbol: "NVDA", label: "NVDA" },
+  { symbol: "ASTS", label: "ASTS" },
+  { symbol: "RKLB", label: "RKLB" },
+  { symbol: "ONDS", label: "ONDS" },
+  { symbol: "KRKNF", label: "KRKNF" },
+  { symbol: "UUUU", label: "UUUU" },
+  { symbol: "POET", label: "POET" },
+  { symbol: "NBIS", label: "NBIS" },
+  { symbol: "NVX", label: "NVX" },
+  { symbol: "OPTT", label: "OPTT" },
+  { symbol: "KEEL", label: "KEEL" }
+];
+
 const weatherCodes = {
   0: "CLEAR SKY",
   1: "MOSTLY CLEAR",
@@ -77,5 +91,6 @@ module.exports = {
   cities,
   sectorSymbols,
   stockSymbols,
+  watchlistSymbols,
   weatherCodes
 };

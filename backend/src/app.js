@@ -7,6 +7,7 @@ const { parseDashboardQuery, parseSpotifySearchQuery } = require("./validation")
 const { getCalendarEvents } = require("./calendar-service");
 const { getDashboardPayload } = require("./dashboard-service");
 const { getEconomicCalendar } = require("./economic-calendar-service");
+const { getWatchlistQuotes } = require("./market-service");
 const { getWorldNews } = require("./news-service");
 const { searchSpotify } = require("./spotify-service");
 const { getLatestYoutubeVideo } = require("./youtube-service");
@@ -133,6 +134,15 @@ app.get("/api/news/world", async (_request, response, next) => {
 app.get("/api/economic-calendar", async (_request, response, next) => {
   try {
     const payload = await getEconomicCalendar();
+    response.status(200).json(payload);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/api/watchlist/quotes", async (_request, response, next) => {
+  try {
+    const payload = await getWatchlistQuotes();
     response.status(200).json(payload);
   } catch (error) {
     next(error);

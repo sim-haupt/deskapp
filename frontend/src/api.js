@@ -131,6 +131,22 @@ export async function fetchEconomicCalendar() {
   return response.json();
 }
 
+export async function fetchWatchlistQuotes() {
+  const response = await fetch(buildApiUrl("/api/watchlist/quotes"), {
+    method: "GET",
+    headers: {
+      Accept: "application/json"
+    },
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+  });
+
+  if (!response.ok) {
+    throw new Error(`Watchlist quote request failed with status ${response.status}.`);
+  }
+
+  return response.json();
+}
+
 export async function fetchSpotifySearch(query, limit = 40, type = "all") {
   const response = await fetch(
     buildApiUrl("/api/spotify/search", {

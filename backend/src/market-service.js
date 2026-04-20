@@ -1,12 +1,13 @@
 const { URL } = require("node:url");
 const MemoryCache = require("./cache");
-const { sectorSymbols, stockSymbols } = require("./data");
+const { sectorSymbols, stockSymbols, watchlistSymbols } = require("./data");
 const { env } = require("./env");
 const HttpError = require("./http-error");
 const { fetchJson } = require("./http-client");
 const logger = require("./logger");
 
 const bannerCache = new MemoryCache();
+const watchlistCache = new MemoryCache();
 
 function getAlpacaHeaders() {
   if (!env.hasAlpacaCredentials) {
@@ -78,11 +79,43 @@ function getStockSnapshot(payload, symbol) {
   return payload?.snapshots?.[symbol] || payload?.[symbol] || null;
 }
 
+function getQuoteMidpoint(snapshot) {
+  const bid = Number(snapshot?.latestQuote?.bp);
+  const ask = Number(snapshot?.latestQuote?.ap);
+
+  if (Number.isFinite(bid) && Number.isFinite(ask) && bid > 0 && ask > 0) {
+    return (bid + ask) / 2;
+  }
+
+  return 0;
+}
+
+function getSnapshotPrice(snapshot) {
+  return (
+    Number(snapshot?.latestTrade?.p) ||
+    getQuoteMidpoint(snapshot) ||
+    Number(snapshot?.minuteBar?.c) ||
+    Number(snapshot?.dailyBar?.c) ||
+    Number(snapshot?.prevDailyBar?.c) ||
+    0
+  );
+}
+
+function getSnapshotTimestamp(snapshot) {
+  return (
+    snapshot?.latestTrade?.t ||
+    snapshot?.latestQuote?.t ||
+    snapshot?.minuteBar?.t ||
+    snapshot?.dailyBar?.t ||
+    snapshot?.prevDailyBar?.t ||
+    null
+  );
+}
+
 function mapBannerStocks(stockSnapshotPayload) {
   return stockSymbols.map(({ symbol, label }) => {
     const snapshot = getStockSnapshot(stockSnapshotPayload, symbol);
-    const price =
-      snapshot?.latestTrade?.p || snapshot?.minuteBar?.c || snapshot?.dailyBar?.c || snapshot?.prevDailyBar?.c || 0;
+    const price = getSnapshotPrice(snapshot);
     const previousClose = snapshot?.prevDailyBar?.c || snapshot?.dailyBar?.o || price;
 
     return {
@@ -98,8 +131,7 @@ function mapBannerSectors(stockSnapshotPayload) {
   return sectorSymbols
     .map(({ symbol, label }) => {
       const snapshot = getStockSnapshot(stockSnapshotPayload, symbol);
-      const price =
-        snapshot?.latestTrade?.p || snapshot?.minuteBar?.c || snapshot?.dailyBar?.c || snapshot?.prevDailyBar?.c || 0;
+      const price = getSnapshotPrice(snapshot);
       const previousClose = snapshot?.prevDailyBar?.c || snapshot?.dailyBar?.o || price;
 
       return {
@@ -110,6 +142,68 @@ function mapBannerSectors(stockSnapshotPayload) {
       };
     })
     .sort((left, right) => right.pct - left.pct);
+}
+
+function mapWatchlistQuotes(stockSnapshotPayload) {
+  return watchlistSymbols.map(({ symbol, label }) => {
+    const snapshot = getStockSnapshot(stockSnapshotPayload, symbol);
+    const price = getSnapshotPrice(snapshot);
+    const previousClose = Number(snapshot?.prevDailyBar?.c) || Number(snapshot?.dailyBar?.o) || price;
+    const change = price && previousClose ? price - previousClose : 0;
+    const pct = previousClose ? (change / previousClose) * 100 : 0;
+
+    return {
+      symbol,
+      label,
+      price,
+      change,
+      pct,
+      asOf: getSnapshotTimestamp(snapshot),
+      available: Boolean(price)
+    };
+  });
+}
+
+async function fetchWatchlistSnapshots() {
+  try {
+    return await fetchStockSnapshots(watchlistSymbols.map((item) => item.symbol));
+  } catch (error) {
+    logger.warn("Batch watchlist quote request failed; retrying symbols individually", {
+      message: error.message
+    });
+  }
+
+  const settledResults = await Promise.allSettled(
+    watchlistSymbols.map(async ({ symbol }) => ({
+      symbol,
+      payload: await fetchStockSnapshots([symbol])
+    }))
+  );
+
+  const snapshots = {};
+
+  settledResults.forEach((result) => {
+    if (result.status !== "fulfilled") {
+      logger.warn("Watchlist quote request failed for symbol", {
+        message: result.reason?.message || "Unknown symbol quote failure"
+      });
+      return;
+    }
+
+    const { symbol, payload } = result.value;
+    const snapshot = getStockSnapshot(payload, symbol);
+
+    if (snapshot) {
+      snapshots[symbol] = snapshot;
+    }
+  });
+
+  if (Object.keys(snapshots).length === 0) {
+    const firstFailure = settledResults.find((result) => result.status === "rejected");
+    throw firstFailure?.reason || new HttpError(502, "Unable to retrieve watchlist quotes right now.");
+  }
+
+  return { snapshots };
 }
 
 async function getBannerData() {
@@ -147,6 +241,40 @@ async function getBannerData() {
   }
 }
 
+async function getWatchlistQuotes() {
+  const cached = watchlistCache.get("watchlist-quotes");
+
+  if (cached) {
+    return cached;
+  }
+
+  try {
+    const stockSnapshots = await fetchWatchlistSnapshots();
+
+    return watchlistCache.set(
+      "watchlist-quotes",
+      {
+        asOf: new Date().toISOString(),
+        feedLabel: "DELAYED SIP EQUITIES",
+        extendedHours: true,
+        quotes: mapWatchlistQuotes(stockSnapshots)
+      },
+      30 * 1000
+    );
+  } catch (error) {
+    logger.warn("Unable to refresh watchlist quotes", {
+      message: error.message
+    });
+
+    if (error.statusCode) {
+      throw error;
+    }
+
+    throw new HttpError(502, "Unable to retrieve watchlist quotes right now.");
+  }
+}
+
 module.exports = {
-  getBannerData
+  getBannerData,
+  getWatchlistQuotes
 };
