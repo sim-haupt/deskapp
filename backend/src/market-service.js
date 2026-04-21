@@ -20,10 +20,11 @@ function getAlpacaHeaders() {
   };
 }
 
-async function fetchStockSnapshots(symbols) {
+async function fetchStockSnapshots(symbols, options = {}) {
   return fetchStockWithFeedFallback({
     endpoint: "https://data.alpaca.markets/v2/stocks/snapshots",
     label: "Alpaca stock snapshots",
+    feedAttempts: options.feedAttempts,
     applySpecificParams(url) {
       url.searchParams.set("symbols", symbols.join(","));
     }
@@ -39,8 +40,12 @@ function isRetryableAlpacaFeedError(error) {
   );
 }
 
-async function fetchStockWithFeedFallback({ endpoint, label, applySpecificParams }) {
-  const feedAttempts = ["delayed_sip", "iex", ""];
+async function fetchStockWithFeedFallback({
+  endpoint,
+  label,
+  applySpecificParams,
+  feedAttempts = ["delayed_sip", "iex", ""]
+}) {
   let lastError;
 
   for (const feed of feedAttempts) {
@@ -165,42 +170,65 @@ function mapWatchlistQuotes(stockSnapshotPayload) {
 }
 
 async function fetchWatchlistSnapshots() {
-  try {
-    return await fetchStockSnapshots(watchlistSymbols.map((item) => item.symbol));
-  } catch (error) {
-    logger.warn("Batch watchlist quote request failed; retrying symbols individually", {
-      message: error.message
-    });
-  }
-
-  const settledResults = await Promise.allSettled(
-    watchlistSymbols.map(async ({ symbol }) => ({
-      symbol,
-      payload: await fetchStockSnapshots([symbol])
-    }))
-  );
-
   const snapshots = {};
+  const listedSymbols = watchlistSymbols.filter((item) => item.feed !== "otc");
+  const otcSymbols = watchlistSymbols.filter((item) => item.feed === "otc");
 
-  settledResults.forEach((result) => {
-    if (result.status !== "fulfilled") {
-      logger.warn("Watchlist quote request failed for symbol", {
-        message: result.reason?.message || "Unknown symbol quote failure"
-      });
+  async function fetchSymbolGroup(symbolConfigs, feedAttempts, groupLabel) {
+    if (symbolConfigs.length === 0) {
       return;
     }
 
-    const { symbol, payload } = result.value;
-    const snapshot = getStockSnapshot(payload, symbol);
+    try {
+      const payload = await fetchStockSnapshots(
+        symbolConfigs.map((item) => item.symbol),
+        { feedAttempts }
+      );
 
-    if (snapshot) {
-      snapshots[symbol] = snapshot;
+      symbolConfigs.forEach(({ symbol }) => {
+        const snapshot = getStockSnapshot(payload, symbol);
+
+        if (snapshot) {
+          snapshots[symbol] = snapshot;
+        }
+      });
+
+      return;
+    } catch (error) {
+      logger.warn(`Batch ${groupLabel} watchlist quote request failed; retrying symbols individually`, {
+        message: error.message
+      });
     }
-  });
+
+    const settledResults = await Promise.allSettled(
+      symbolConfigs.map(async ({ symbol }) => ({
+        symbol,
+        payload: await fetchStockSnapshots([symbol], { feedAttempts })
+      }))
+    );
+
+    settledResults.forEach((result) => {
+      if (result.status !== "fulfilled") {
+        logger.warn("Watchlist quote request failed for symbol", {
+          message: result.reason?.message || "Unknown symbol quote failure"
+        });
+        return;
+      }
+
+      const { symbol, payload } = result.value;
+      const snapshot = getStockSnapshot(payload, symbol);
+
+      if (snapshot) {
+        snapshots[symbol] = snapshot;
+      }
+    });
+  }
+
+  await fetchSymbolGroup(listedSymbols, ["sip", "iex", "delayed_sip", ""], "listed");
+  await fetchSymbolGroup(otcSymbols, ["otc", "delayed_sip", ""], "otc");
 
   if (Object.keys(snapshots).length === 0) {
-    const firstFailure = settledResults.find((result) => result.status === "rejected");
-    throw firstFailure?.reason || new HttpError(502, "Unable to retrieve watchlist quotes right now.");
+    throw new HttpError(502, "Unable to retrieve watchlist quotes right now.");
   }
 
   return { snapshots };

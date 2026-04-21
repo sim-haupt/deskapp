@@ -47,7 +47,7 @@ const watchlistSymbols = [
   { symbol: "ASTS", label: "ASTS" },
   { symbol: "RKLB", label: "RKLB" },
   { symbol: "ONDS", label: "ONDS" },
-  { symbol: "KRKNF", label: "KRKNF" },
+  { symbol: "KRKNF", label: "KRKNF", feed: "otc" },
   { symbol: "UUUU", label: "UUUU" },
   { symbol: "POET", label: "POET" },
   { symbol: "NBIS", label: "NBIS" },
