@@ -95,15 +95,36 @@ function getQuoteMidpoint(snapshot) {
   return 0;
 }
 
+function getTimestampValue(value) {
+  const timestamp = Date.parse(value || "");
+  return Number.isFinite(timestamp) ? timestamp : 0;
+}
+
 function getSnapshotPrice(snapshot) {
-  return (
-    Number(snapshot?.latestTrade?.p) ||
-    getQuoteMidpoint(snapshot) ||
-    Number(snapshot?.minuteBar?.c) ||
-    Number(snapshot?.dailyBar?.c) ||
-    Number(snapshot?.prevDailyBar?.c) ||
-    0
-  );
+  const candidates = [
+    {
+      source: "trade",
+      price: Number(snapshot?.latestTrade?.p) || 0,
+      timestamp: getTimestampValue(snapshot?.latestTrade?.t)
+    },
+    {
+      source: "quote",
+      price: getQuoteMidpoint(snapshot),
+      timestamp: getTimestampValue(snapshot?.latestQuote?.t)
+    },
+    {
+      source: "minuteBar",
+      price: Number(snapshot?.minuteBar?.c) || 0,
+      timestamp: getTimestampValue(snapshot?.minuteBar?.t)
+    }
+  ].filter((candidate) => candidate.price > 0 && candidate.timestamp > 0);
+
+  if (candidates.length > 0) {
+    candidates.sort((left, right) => right.timestamp - left.timestamp);
+    return candidates[0].price;
+  }
+
+  return Number(snapshot?.dailyBar?.c) || Number(snapshot?.prevDailyBar?.c) || 0;
 }
 
 function getSnapshotTimestamp(snapshot) {
