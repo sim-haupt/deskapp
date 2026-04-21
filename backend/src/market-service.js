@@ -5,7 +5,6 @@ const { env } = require("./env");
 const HttpError = require("./http-error");
 const { fetchJson } = require("./http-client");
 const logger = require("./logger");
-const { getSessionState } = require("./session");
 
 const bannerCache = new MemoryCache();
 const watchlistCache = new MemoryCache();
@@ -19,50 +18,6 @@ function getAlpacaHeaders() {
     "APCA-API-KEY-ID": env.alpacaKeyId,
     "APCA-API-SECRET-KEY": env.alpacaSecretKey
   };
-}
-
-async function fetchStockSnapshots(symbols, options = {}) {
-  return fetchStockWithFeedFallback({
-    endpoint: "https://data.alpaca.markets/v2/stocks/snapshots",
-    label: "Alpaca stock snapshots",
-    feedAttempts: options.feedAttempts,
-    applySpecificParams(url) {
-      url.searchParams.set("symbols", symbols.join(","));
-    }
-  });
-}
-
-async function fetchLatestQuotes(symbols, options = {}) {
-  return fetchStockWithFeedFallback({
-    endpoint: "https://data.alpaca.markets/v2/stocks/quotes/latest",
-    label: "Alpaca latest stock quotes",
-    feedAttempts: options.feedAttempts,
-    applySpecificParams(url) {
-      url.searchParams.set("symbols", symbols.join(","));
-    }
-  });
-}
-
-async function fetchLatestBars(symbols, options = {}) {
-  return fetchStockWithFeedFallback({
-    endpoint: "https://data.alpaca.markets/v2/stocks/bars/latest",
-    label: "Alpaca latest stock bars",
-    feedAttempts: options.feedAttempts,
-    applySpecificParams(url) {
-      url.searchParams.set("symbols", symbols.join(","));
-    }
-  });
-}
-
-async function fetchLatestTrades(symbols, options = {}) {
-  return fetchStockWithFeedFallback({
-    endpoint: "https://data.alpaca.markets/v2/stocks/trades/latest",
-    label: "Alpaca latest stock trades",
-    feedAttempts: options.feedAttempts,
-    applySpecificParams(url) {
-      url.searchParams.set("symbols", symbols.join(","));
-    }
-  });
 }
 
 function isRetryableAlpacaFeedError(error) {
@@ -91,12 +46,10 @@ async function fetchStockWithFeedFallback({
     }
 
     try {
-      const payload = await fetchJson(url, {
+      return await fetchJson(url, {
         headers: getAlpacaHeaders(),
         label
       });
-
-      return payload;
     } catch (error) {
       lastError = error;
 
@@ -114,20 +67,24 @@ async function fetchStockWithFeedFallback({
   throw lastError;
 }
 
+async function fetchStockSnapshots(symbols, options = {}) {
+  return fetchStockWithFeedFallback({
+    endpoint: "https://data.alpaca.markets/v2/stocks/snapshots",
+    label: "Alpaca stock snapshots",
+    feedAttempts: options.feedAttempts,
+    applySpecificParams(url) {
+      url.searchParams.set("symbols", symbols.join(","));
+    }
+  });
+}
+
 function getStockSnapshot(payload, symbol) {
   return payload?.snapshots?.[symbol] || payload?.[symbol] || null;
 }
 
-function getLatestQuote(payload, symbol) {
-  return payload?.quotes?.[symbol] || payload?.[symbol] || null;
-}
-
-function getLatestBar(payload, symbol) {
-  return payload?.bars?.[symbol] || payload?.[symbol] || null;
-}
-
-function getLatestTrade(payload, symbol) {
-  return payload?.trades?.[symbol] || payload?.[symbol] || null;
+function getTimestampValue(value) {
+  const timestamp = Date.parse(value || "");
+  return Number.isFinite(timestamp) ? timestamp : 0;
 }
 
 function getQuoteMidpoint(snapshot) {
@@ -141,45 +98,17 @@ function getQuoteMidpoint(snapshot) {
   return 0;
 }
 
-function getTimestampValue(value) {
-  const timestamp = Date.parse(value || "");
-  return Number.isFinite(timestamp) ? timestamp : 0;
-}
-
-function getFreshnessWindowMs(phase) {
-  if (phase === "OVERNIGHT" || phase === "PREMARKET") {
-    return 12 * 60 * 60 * 1000;
-  }
-
-  if (phase === "AFTER HOURS") {
-    return 8 * 60 * 60 * 1000;
-  }
-
-  return 2 * 60 * 60 * 1000;
-}
-
-function isFreshTimestamp(timestamp, phase, referenceDate = new Date()) {
-  if (!timestamp) {
-    return false;
-  }
-
-  return referenceDate.getTime() - timestamp <= getFreshnessWindowMs(phase);
-}
-
 function getSnapshotPrice(snapshot) {
   const candidates = [
     {
-      source: "trade",
       price: Number(snapshot?.latestTrade?.p) || 0,
       timestamp: getTimestampValue(snapshot?.latestTrade?.t)
     },
     {
-      source: "quote",
       price: getQuoteMidpoint(snapshot),
       timestamp: getTimestampValue(snapshot?.latestQuote?.t)
     },
     {
-      source: "minuteBar",
       price: Number(snapshot?.minuteBar?.c) || 0,
       timestamp: getTimestampValue(snapshot?.minuteBar?.t)
     }
@@ -193,269 +122,112 @@ function getSnapshotPrice(snapshot) {
   return Number(snapshot?.dailyBar?.c) || Number(snapshot?.prevDailyBar?.c) || 0;
 }
 
-function getWatchlistPrice({ snapshot, trade, quote, bar, phase, referenceDate = new Date() }) {
-  const quoteMid = getQuoteMidpoint({ latestQuote: quote });
-  const candidates = [
-    {
-      source: "trade",
-      price: Number(trade?.p) || 0,
-      timestamp: getTimestampValue(trade?.t)
-    },
-    {
-      source: "quote",
-      price: quoteMid,
-      timestamp: getTimestampValue(quote?.t)
-    },
-    {
-      source: "bar",
-      price: Number(bar?.c) || 0,
-      timestamp: getTimestampValue(bar?.t)
-    },
-  ].filter((candidate) => candidate.price > 0 && candidate.timestamp > 0);
-
-  if (candidates.length > 0) {
-    const freshCandidates = candidates.filter((candidate) =>
-      isFreshTimestamp(candidate.timestamp, phase, referenceDate)
-    );
-
-    if (freshCandidates.length > 0) {
-      freshCandidates.sort((left, right) => right.timestamp - left.timestamp);
-      return freshCandidates[0];
-    }
-  }
+function mapSnapshotQuote({ symbol, label }, snapshot) {
+  const price = getSnapshotPrice(snapshot);
+  const previousClose = Number(snapshot?.prevDailyBar?.c) || Number(snapshot?.dailyBar?.o) || price;
 
   return {
-    source: "none",
-    price: 0,
-    timestamp: 0
+    symbol,
+    label,
+    price,
+    pct: previousClose ? ((price - previousClose) / previousClose) * 100 : 0,
+    asOf:
+      snapshot?.latestTrade?.t ||
+      snapshot?.latestQuote?.t ||
+      snapshot?.minuteBar?.t ||
+      snapshot?.dailyBar?.t ||
+      snapshot?.prevDailyBar?.t ||
+      null,
+    available: Boolean(price)
   };
 }
 
-function getSnapshotTimestamp(snapshot) {
-  return (
-    snapshot?.latestTrade?.t ||
-    snapshot?.latestQuote?.t ||
-    snapshot?.minuteBar?.t ||
-    snapshot?.dailyBar?.t ||
-    snapshot?.prevDailyBar?.t ||
-    null
-  );
-}
-
 function mapBannerStocks(stockSnapshotPayload) {
-  return stockSymbols.map(({ symbol, label }) => {
-    const snapshot = getStockSnapshot(stockSnapshotPayload, symbol);
-    const price = getSnapshotPrice(snapshot);
-    const previousClose = snapshot?.prevDailyBar?.c || snapshot?.dailyBar?.o || price;
-
-    return {
-      symbol,
-      label,
-      price,
-      pct: previousClose ? ((price - previousClose) / previousClose) * 100 : 0
-    };
+  return stockSymbols.map((item) => {
+    const snapshot = getStockSnapshot(stockSnapshotPayload, item.symbol);
+    return mapSnapshotQuote(item, snapshot);
   });
 }
 
 function mapBannerSectors(stockSnapshotPayload) {
   return sectorSymbols
-    .map(({ symbol, label }) => {
-      const snapshot = getStockSnapshot(stockSnapshotPayload, symbol);
-      const price = getSnapshotPrice(snapshot);
-      const previousClose = snapshot?.prevDailyBar?.c || snapshot?.dailyBar?.o || price;
-
-      return {
-        symbol,
-        label,
-        price,
-        pct: previousClose ? ((price - previousClose) / previousClose) * 100 : 0
-      };
+    .map((item) => {
+      const snapshot = getStockSnapshot(stockSnapshotPayload, item.symbol);
+      return mapSnapshotQuote(item, snapshot);
     })
     .sort((left, right) => right.pct - left.pct);
 }
 
-function mapWatchlistLiveQuotes({
-  stockSnapshotPayload,
-  latestTradesPayload,
-  latestQuotesPayload,
-  latestBarsPayload,
-  session,
-  referenceDate = new Date()
-}) {
-  return watchlistSymbols.map(({ symbol, label }) => {
-    const snapshot = getStockSnapshot(stockSnapshotPayload, symbol);
-    const trade = getLatestTrade(latestTradesPayload, symbol);
-    const quote = getLatestQuote(latestQuotesPayload, symbol);
-    const bar = getLatestBar(latestBarsPayload, symbol);
-    const live = getWatchlistPrice({
-      snapshot,
-      trade,
-      quote,
-      bar,
-      phase: session.phase,
-      referenceDate
-    });
-    const previousClose = Number(snapshot?.prevDailyBar?.c) || Number(snapshot?.dailyBar?.o) || 0;
-    const change = live.price && previousClose ? live.price - previousClose : 0;
-    const pct = previousClose ? (change / previousClose) * 100 : 0;
-
-    return {
-      symbol,
-      label,
-      price: live.price,
-      change,
-      pct,
-      asOf: live.timestamp ? new Date(live.timestamp).toISOString() : getSnapshotTimestamp(snapshot),
-      available: Boolean(live.price),
-      source: live.source
-    };
-  });
-}
-
-function getListedWatchlistFeedAttempts(referenceDate = new Date()) {
-  const session = getSessionState(referenceDate);
-
-  if (session.phase === "OVERNIGHT") {
-    return ["boats", "overnight", "sip", "iex", "delayed_sip", ""];
-  }
-
-  return ["sip", "iex", "delayed_sip", ""];
-}
-
 async function fetchWatchlistSnapshots() {
-  const payloads = {
-    snapshots: { snapshots: {} },
-    trades: { trades: {} },
-    quotes: { quotes: {} },
-    bars: { bars: {} }
-  };
+  const payload = { snapshots: {} };
   const listedSymbols = watchlistSymbols.filter((item) => item.feed !== "otc");
   const otcSymbols = watchlistSymbols.filter((item) => item.feed === "otc");
 
-  async function fetchSymbolGroup(symbolConfigs, feedAttempts, groupLabel) {
+  async function fetchGroup(symbolConfigs, feedAttempts, groupLabel) {
     if (symbolConfigs.length === 0) {
       return;
     }
 
-    const symbols = symbolConfigs.map((item) => item.symbol);
-    const [snapshotsResult, tradesResult, quotesResult, barsResult] = await Promise.allSettled([
-      fetchStockSnapshots(symbols, { feedAttempts }),
-      fetchLatestTrades(symbols, { feedAttempts }),
-      fetchLatestQuotes(symbols, { feedAttempts }),
-      fetchLatestBars(symbols, { feedAttempts })
-    ]);
+    try {
+      const result = await fetchStockSnapshots(
+        symbolConfigs.map((item) => item.symbol),
+        { feedAttempts }
+      );
 
-    if (snapshotsResult.status === "fulfilled") {
-      symbols.forEach((symbol) => {
-        const snapshot = getStockSnapshot(snapshotsResult.value, symbol);
+      symbolConfigs.forEach(({ symbol }) => {
+        const snapshot = getStockSnapshot(result, symbol);
 
         if (snapshot) {
-          payloads.snapshots.snapshots[symbol] = snapshot;
+          payload.snapshots[symbol] = snapshot;
         }
       });
-    }
 
-    if (tradesResult.status === "fulfilled") {
-      symbols.forEach((symbol) => {
-        const trade = getLatestTrade(tradesResult.value, symbol);
-
-        if (trade) {
-          payloads.trades.trades[symbol] = trade;
-        }
-      });
-    }
-
-    if (quotesResult.status === "fulfilled") {
-      symbols.forEach((symbol) => {
-        const quote = getLatestQuote(quotesResult.value, symbol);
-
-        if (quote) {
-          payloads.quotes.quotes[symbol] = quote;
-        }
-      });
-    }
-
-    if (barsResult.status === "fulfilled") {
-      symbols.forEach((symbol) => {
-        const bar = getLatestBar(barsResult.value, symbol);
-
-        if (bar) {
-          payloads.bars.bars[symbol] = bar;
-        }
-      });
-    }
-
-    if (
-      snapshotsResult.status === "fulfilled" ||
-      tradesResult.status === "fulfilled" ||
-      quotesResult.status === "fulfilled" ||
-      barsResult.status === "fulfilled"
-    ) {
       return;
+    } catch (error) {
+      logger.warn(`Batch ${groupLabel} watchlist request failed; retrying symbols individually`, {
+        message: error.message
+      });
     }
 
-    logger.warn(`Batch ${groupLabel} watchlist market request failed; retrying symbols individually`, {
-      snapshotsError: snapshotsResult.reason?.message || "Unknown snapshot failure",
-      tradesError: tradesResult.reason?.message || "Unknown trade failure",
-      quotesError: quotesResult.reason?.message || "Unknown quote failure",
-      barsError: barsResult.reason?.message || "Unknown bar failure"
-    });
-
-    const settledResults = await Promise.allSettled(
+    const settled = await Promise.allSettled(
       symbolConfigs.map(async ({ symbol }) => ({
         symbol,
-        snapshotPayload: await fetchStockSnapshots([symbol], { feedAttempts }).catch(() => null),
-        tradePayload: await fetchLatestTrades([symbol], { feedAttempts }).catch(() => null),
-        quotePayload: await fetchLatestQuotes([symbol], { feedAttempts }).catch(() => null),
-        barPayload: await fetchLatestBars([symbol], { feedAttempts }).catch(() => null)
+        result: await fetchStockSnapshots([symbol], { feedAttempts })
       }))
     );
 
-    settledResults.forEach((result) => {
+    settled.forEach((result) => {
       if (result.status !== "fulfilled") {
-        logger.warn("Watchlist quote request failed for symbol", {
-          message: result.reason?.message || "Unknown symbol quote failure"
+        logger.warn("Watchlist snapshot request failed for symbol", {
+          message: result.reason?.message || "Unknown symbol snapshot failure"
         });
         return;
       }
 
-      const { symbol, snapshotPayload, tradePayload, quotePayload, barPayload } = result.value;
+      const { symbol, result: snapshotPayload } = result.value;
       const snapshot = getStockSnapshot(snapshotPayload, symbol);
-      const trade = getLatestTrade(tradePayload, symbol);
-      const quote = getLatestQuote(quotePayload, symbol);
-      const bar = getLatestBar(barPayload, symbol);
 
       if (snapshot) {
-        payloads.snapshots.snapshots[symbol] = snapshot;
-      }
-
-      if (trade) {
-        payloads.trades.trades[symbol] = trade;
-      }
-
-      if (quote) {
-        payloads.quotes.quotes[symbol] = quote;
-      }
-
-      if (bar) {
-        payloads.bars.bars[symbol] = bar;
+        payload.snapshots[symbol] = snapshot;
       }
     });
   }
 
-  await fetchSymbolGroup(listedSymbols, getListedWatchlistFeedAttempts(), "listed");
-  await fetchSymbolGroup(otcSymbols, ["otc", "delayed_sip", ""], "otc");
+  await fetchGroup(listedSymbols, ["delayed_sip", "iex", ""], "listed");
+  await fetchGroup(otcSymbols, ["otc", "delayed_sip", ""], "otc");
 
-  const hasSnapshots = Object.keys(payloads.snapshots.snapshots).length > 0;
-  const hasTrades = Object.keys(payloads.trades.trades).length > 0;
-  const hasQuotes = Object.keys(payloads.quotes.quotes).length > 0;
-  const hasBars = Object.keys(payloads.bars.bars).length > 0;
-
-  if (!hasSnapshots && !hasTrades && !hasQuotes && !hasBars) {
+  if (Object.keys(payload.snapshots).length === 0) {
     throw new HttpError(502, "Unable to retrieve watchlist quotes right now.");
   }
 
-  return payloads;
+  return payload;
+}
+
+function mapWatchlistQuotes(stockSnapshotPayload) {
+  return watchlistSymbols.map((item) => {
+    const snapshot = getStockSnapshot(stockSnapshotPayload, item.symbol);
+    return mapSnapshotQuote(item, snapshot);
+  });
 }
 
 async function getBannerData() {
@@ -467,7 +239,6 @@ async function getBannerData() {
 
   try {
     const symbols = [...stockSymbols, ...sectorSymbols].map((item) => item.symbol);
-
     const stockSnapshots = await fetchStockSnapshots(symbols);
 
     return bannerCache.set(
@@ -501,32 +272,15 @@ async function getWatchlistQuotes() {
   }
 
   try {
-    const marketPayloads = await fetchWatchlistSnapshots();
-    const referenceDate = new Date();
-    const session = getSessionState(referenceDate);
-    const feedLabel =
-      session.phase === "OVERNIGHT"
-        ? "LIVE OVERNIGHT QUOTES"
-        : session.phase === "PREMARKET"
-          ? "LIVE PREMARKET QUOTES"
-          : session.phase === "AFTER HOURS"
-            ? "LIVE AFTER HOURS QUOTES"
-            : "LIVE MARKET QUOTES";
+    const stockSnapshots = await fetchWatchlistSnapshots();
 
     return watchlistCache.set(
       "watchlist-quotes",
       {
         asOf: new Date().toISOString(),
-        feedLabel,
+        feedLabel: "DELAYED SIP EQUITIES",
         extendedHours: true,
-        quotes: mapWatchlistLiveQuotes({
-          stockSnapshotPayload: marketPayloads.snapshots,
-          latestTradesPayload: marketPayloads.trades,
-          latestQuotesPayload: marketPayloads.quotes,
-          latestBarsPayload: marketPayloads.bars,
-          session,
-          referenceDate
-        })
+        quotes: mapWatchlistQuotes(stockSnapshots)
       },
       30 * 1000
     );
