@@ -8,6 +8,11 @@
     "check:backend": "npm --prefix backend run check",
     "dev:backend": "npm --prefix backend run dev",
     "start": "npm --prefix backend run start",
-    "start:backend": "npm --prefix backend run start"
+    "start:backend": "npm --prefix backend run start",
+    "deploy": "wrangler deploy",
+    "preview": "wrangler dev"
+  },
+  "devDependencies": {
+    "wrangler": "^4.84.0"
   }
 }
